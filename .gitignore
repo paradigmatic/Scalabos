@@ -3,4 +3,5 @@
 *#
 
 target/
-project/
+project/boot/
+project/build/target/
