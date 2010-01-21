@@ -1,6 +1,8 @@
 package lb
 
-class Cell( var dyn: Dynamics ) {
+import lb.dyn._
+
+abstract class Cell( var dyn: Dynamics ) extends Descriptor {
 
   private val f = new Array[Double](1) //FIXME: init with correct size
 
