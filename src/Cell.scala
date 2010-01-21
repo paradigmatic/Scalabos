@@ -5,7 +5,7 @@ import lb.util.Util._
 
 abstract class Cell( var dyn: Dynamics ) extends Descriptor {
 
-  private val f = copyArray( T )
+  private var f = copyArray( T )
 
   def collide() = dyn(f)
 
