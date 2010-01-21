@@ -9,7 +9,7 @@ trait Dynamics {
 
 }
 
-class NoDynamics extends Dynamics {
+object NoDynamics extends Dynamics {
 
   def apply( f: Array[Double] ) {}
   def revert( f: Array[Double] ) {}
