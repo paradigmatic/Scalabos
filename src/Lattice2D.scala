@@ -14,7 +14,12 @@ abstract class Lattice2D( val nX: Int, val nY: Int,
     g
   }
 
-  def collide() { }
+  def collide() = { 
+    for (iX <- 0 until nX; iY <- 0 until nY) {
+      grid(iX)(iY).collide
+      grid(iX)(iY).revert
+    }
+  }
  
   def stream() { }
 
@@ -23,7 +28,6 @@ abstract class Lattice2D( val nX: Int, val nY: Int,
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def createCell(): Cell
-  
  
 }
 

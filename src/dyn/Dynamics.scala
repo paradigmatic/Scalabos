@@ -5,10 +5,10 @@ import lb.util.Util._
 trait Dynamics extends Descriptor {
   
   def apply( f: Array[Double] ): Unit
-  def revert( f: Array[Double] ): Unit = {
-    val half = Q/2
-    for (iPop <- 1 until half+1) { swap(iPop,iPop+half,f) }
-  }
+//   def revert( f: Array[Double] ): Unit = {
+//     val half = Q/2
+//     for (iPop <- 1 until half+1) { swap(iPop,iPop+half,f) }
+//   }
   def rho( f: Array[Double]): Double
   def u( f: Array[Double], rho: Double ): Array[Double]
 
