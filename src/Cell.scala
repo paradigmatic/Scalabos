@@ -1,10 +1,11 @@
 package lb
 
 import lb.dyn._
+import lb.util.Util._
 
 abstract class Cell( var dyn: Dynamics ) extends Descriptor {
 
-  private val f = new Array[Double](Q) //FIXME: init with correct size
+  private val f = copyArray( T )
 
   def collide() = dyn(f)
 

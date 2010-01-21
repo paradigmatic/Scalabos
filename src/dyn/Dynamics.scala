@@ -14,6 +14,12 @@ object NoDynamics extends Dynamics {
   def apply( f: Array[Double] ) {}
   def revert( f: Array[Double] ) {}
   def rho( f: Array[Double]) = 1.0
-  def u( f: Array[Double], rho: Double ) = Array( 0.0, 0.0 )
+  def u( f: Array[Double], rho: Double ) = Array( 0.0, 0.0 ) //FIXME: faut changer ça dedjeux
+
+}
+
+trait IncompressibleDynamics extends Dynamics {
+
+  
 
 }
