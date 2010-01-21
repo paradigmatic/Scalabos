@@ -4,7 +4,7 @@ import lb.dyn._
 
 abstract class Cell( var dyn: Dynamics ) extends Descriptor {
 
-  private val f = new Array[Double](1) //FIXME: init with correct size
+  private val f = new Array[Double](Q) //FIXME: init with correct size
 
   def collide() = dyn(f)
 
