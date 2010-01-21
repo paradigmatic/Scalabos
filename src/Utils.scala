@@ -1,5 +1,7 @@
 package lb.util
 
+import Math._
+
 object Util {
 
   def copyArray[A]( ary: Array[A] ) = {
@@ -13,5 +15,15 @@ object Util {
     f(i) = f(j)
     f(j) = tmp
   }
+  
+  def dot(u:Array[Double], v:Array[Double]) : Double = {
+    var res:Double = 0.0
+    for( iD <- 0 until u.size) { res += u(iD)*v(iD) }
+    res
+  }
+  
+  def normSqr(u:Array[Double]) : Double = { dot(u,u) }
+  
+  def norm(u:Array[Double]) : Double = { sqrt(normSqr(u)) }
     
 }

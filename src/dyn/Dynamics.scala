@@ -32,7 +32,26 @@ trait IncompressibleDynamics extends Dynamics {
   }
 }
 
-abstract class BGKdynamics extends IncompressibleDynamics {
+abstract class BGKdynamics(om:Double) extends IncompressibleDynamics {
   
-  def apply( f: Array[Double] ) {}
+  private var omega = om // the relaxation frequency
+  
+  def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) : Double = {
+    var c_u = 0.0
+    for (iD <- 0 until D) { c_u += C(iPop)(iD) * u(iD) }
+    c_u *= invCs2
+    
+    T(iPop)*rho*(1.0 + c_u + 0.5 * (c_u*c_u - invCs2*uSqr ))
+  }
+  
+  def apply( f: Array[Double] ) = {
+    val dens:Double = rho(f)
+    val vel:Array[Double] = u(f,dens)
+    val velSqr = normSqr(vel)
+    
+    for (iPop <- 0 until Q) { 
+      f(iPop) *= (1.0 - omega)
+      f(iPop) += omega*equilibrium(iPop,dens,vel,velSqr)
+    }
+  }
 }
