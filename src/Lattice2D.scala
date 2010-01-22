@@ -14,11 +14,15 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     g
   }
   
+  val boundingBox = new Box2D(0,nX-1,0,0,nY-1)
+  
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
     for (iX <- 0 until nX; iY <- 0 until nY) {
       grid(iX)(iY).collide
+      // The collided populations are swapped with their opposite direction
+      // this step is needed by the streaming step.
       grid(iX)(iY).revert
     }
   }
@@ -26,12 +30,14 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
   def stream() = {
     lazy val half = D.q/2
     for (iX <- 0 until nX; iY <- 0 until nY; iPop <- 1 until half+1) {
+      // The modulo are used for default periodicity
       val nextX = (iX + D.c(iPop)(0) + nX) % nX
       val nextY = (iY + D.c(iPop)(1) + nY) % nY
       
+      // swapping grid(iX,iY,iPop+half) with grid(nextX)(nextY)(iPop)
       val tmp = grid(iX)(iY)(iPop+half)
-      grid(iX)(iY)(iPop+half,grid(nextX)(nextY)(iPop))
-      grid(nextX)(nextY)(iPop,tmp)
+      grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
+      grid(nextX)(nextY)(iPop) = tmp
     }
   }
 

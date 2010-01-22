@@ -3,6 +3,8 @@ package lb.util
 import Math._
 
 object Util {
+  
+  class Box2D(val x0:Int,val x1:Int, val y0:Int, val y1:Int) {}
 
   def copyArray[A]( ary: Array[A] ) = {
     val copy = new Array[A]( ary.size )
@@ -17,6 +19,12 @@ object Util {
   }
   
   def dot(u:Array[Double], v:Array[Double]) : Double = {
+    var res:Double = u(0)*v(0)
+    for( iD <- 1 until u.size) { res += u(iD)*v(iD) }
+    res
+  }
+  
+  def dot(u:Array[Int], v:Array[Double]) : Double = {
     var res:Double = u(0)*v(0)
     for( iD <- 1 until u.size) { res += u(iD)*v(iD) }
     res

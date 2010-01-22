@@ -5,6 +5,9 @@ import lb.util.Util._
 abstract class Dynamics[T <: Descriptor](val D:T) {
   
   def apply( f: Array[Double] ): Unit
+  
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) : Double
+  
   def rho( f: Array[Double]): Double
   def u( f: Array[Double], rho: Double ): Array[Double]
 
@@ -28,13 +31,10 @@ abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends
   }
 }
 
-class BGKdynamics[T <: Descriptor](override val D:T, om:Double) extends IncompressibleDynamics(D) {
-  
-  private var omega = om // the relaxation frequency
+class BGKdynamics[T <: Descriptor](override val D:T, var omega:Double) extends IncompressibleDynamics(D) {
   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) : Double = {
-    var c_u = 0.0
-    for (iD <- 0 until D.d) { c_u += D.c(iPop)(iD) * u(iD) }
+    var c_u = dot(D.c(iPop),u)
     c_u *= D.invCs2
     
     D.t(iPop)*rho*(1.0 + c_u + 0.5 * (c_u*c_u - D.invCs2*uSqr ))

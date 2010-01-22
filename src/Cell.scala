@@ -11,7 +11,7 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
   
   def apply(iPop:Int) : Double = f(iPop)
   
-  def apply(iPop:Int, rhs:Double) = { f(iPop) = rhs }
+  def update(iPop:Int, rhs:Double) = { f(iPop) = rhs }
 
   def collide() = dyn(f)
   
