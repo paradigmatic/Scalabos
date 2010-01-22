@@ -3,7 +3,7 @@ package lb
 import lb.dyn._
 import lb.util.Util._
 
-abstract class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
+class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
 		 val defaultDynamics: Dynamics[T] )  {
 
   private val grid = {
@@ -13,6 +13,8 @@ abstract class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     }
     g
   }
+  
+  def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
     for (iX <- 0 until nX; iY <- 0 until nY) {
@@ -21,21 +23,17 @@ abstract class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     }
   }
  
-  def stream() {}
-//   = {
-//     lazy val half = Q/2
-//     for (iX <- 0 until nX; iY <- 0 until nY; iPop <- 1 until half+1) {
-//       val nextX = (iX + C(iPop)(0) + nX) % nX
-//       val nextY = (iY + C(iPop)(1) + nY) % nY
-//       
-//       val tmp = grid(iX)(iY)(iPop+half)
-//       grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
-//       self.grid(nextX)(nextY)(iPop) = tmp
-//     }
-//   }
+  def stream() = {
+    lazy val half = D.q/2
+    for (iX <- 0 until nX; iY <- 0 until nY; iPop <- 1 until half+1) {
+      val nextX = (iX + D.c(iPop)(0) + nX) % nX
+      val nextY = (iY + D.c(iPop)(1) + nY) % nY
+      
+      val tmp = grid(iX)(iY)(iPop+half)
+      grid(iX)(iY)(iPop+half,grid(nextX)(nextY)(iPop))
+      grid(nextX)(nextY)(iPop,tmp)
+    }
+  }
 
   def collideAndStream() = { collide; stream }
-
-  def apply( x: Int, y: Int ) = grid(x)(y)
- 
 }

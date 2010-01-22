@@ -28,7 +28,7 @@ abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends
   }
 }
 
-abstract class BGKdynamics[T <: Descriptor](override val D:T, om:Double) extends IncompressibleDynamics(D) {
+class BGKdynamics[T <: Descriptor](override val D:T, om:Double) extends IncompressibleDynamics(D) {
   
   private var omega = om // the relaxation frequency
   

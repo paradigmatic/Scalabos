@@ -11,7 +11,7 @@ trait Descriptor {
 
 }
 
-trait D2Q9 {
+object D2Q9 extends Descriptor{
 
   val q = 9
   val d = 2
