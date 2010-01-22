@@ -3,14 +3,20 @@ package lb
 import lb.dyn._
 import lb.util.Util._
 
-abstract class Cell( var dyn: Dynamics ) extends Descriptor {
+class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
 
-  private var f = copyArray( T )
+  private var f = copyArray( D.t )
+  
+  def D() : Descriptor = dyn.D
+  
+  def apply(iPop:Int) : Double = { f(iPop) }
+  
+  def pop() = f
 
   def collide() = dyn(f)
   
   def revert(): Unit = {
-    val half = Q/2
+    val half = D.q/2
     for (iPop <- 1 until half+1) { swap(iPop,iPop+half,f) }
   }
 

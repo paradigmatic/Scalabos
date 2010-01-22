@@ -17,8 +17,8 @@ object Util {
   }
   
   def dot(u:Array[Double], v:Array[Double]) : Double = {
-    var res:Double = 0.0
-    for( iD <- 0 until u.size) { res += u(iD)*v(iD) }
+    var res:Double = u(0)*v(0)
+    for( iD <- 1 until u.size) { res += u(iD)*v(iD) }
     res
   }
   
