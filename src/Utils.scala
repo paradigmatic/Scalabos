@@ -25,5 +25,16 @@ object Util {
   def normSqr(u:Array[Double]) : Double = { dot(u,u) }
   
   def norm(u:Array[Double]) : Double = { sqrt(normSqr(u)) }
+
+  def dump[T](filename: String, matrix: Array[Array[T]] ) {
+    import java.io._
+    val out = new PrintWriter( new File( filename ) )
+    matrix foreach { 
+      row =>
+        out println row.mkString(" ") 
+    }
+    out close
+    
+  }
     
 }
