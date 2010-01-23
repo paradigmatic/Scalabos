@@ -8,11 +8,10 @@ trait Descriptor {
   val t: Array[Double]
   val invCs2: Double
   lazy val cs2 = 1.0 / invCs2
-
+  override lazy val toString = "D"+d+"Q"+q
 }
 
-object D2Q9 extends Descriptor{
-
+object D2Q9 extends Descriptor {
   val q = 9
   val d = 2
   val c = Array( Array(0,0),

@@ -58,7 +58,6 @@ case object EastWall extends Region {
    }
 }
 
-
 case class Rectangle( val fromX: Int, val toX: Int,
                       val fromY: Int, val toY: Int) extends Region {
   //TODO: check bounds
@@ -75,6 +74,14 @@ case class Where( val predicate: (Int,Int) => Boolean ) extends Region {
   }
 }
 
+case object WholeDomain extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    for( x <- 0 until lattice.nX;   
+         y <- 0 until lattice.nY  ) f( lattice(x,y) )   
+  }
+  override def and( other: Region ) = this
+
+}
 
 class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) extends Iterable[Cell[D]]{
 

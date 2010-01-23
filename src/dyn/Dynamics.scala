@@ -50,4 +50,6 @@ class BGKdynamics[T <: Descriptor](override val D:T, om:Double) extends Incompre
       f(iPop) += omega*equilibrium(iPop,dens,vel,velSqr)
     }
   }
+
+  override lazy val toString = "BGK("+D+", omega="+om+")"
 }
