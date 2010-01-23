@@ -82,7 +82,7 @@ class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) exten
     regions.foreach(lattice,f) 
   }
 
-  def elements() = {
+  lazy val elements = {
     var lst = List[Cell[D]]()
     foreach( lst ::= _ )
     lst.elements
