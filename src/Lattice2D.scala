@@ -1,6 +1,7 @@
 package lb
 
 import lb.dyn._
+import lb.select._
 import lb.util.Util._
 
 class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
@@ -44,4 +45,6 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     }
     ary
   }
+
+  def select( region: Region ) = new Selection( this, region )
 }
