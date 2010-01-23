@@ -76,10 +76,16 @@ case class Where( val predicate: (Int,Int) => Boolean ) extends Region {
 }
 
 
-class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) {
+class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) extends Iterable[Cell[D]]{
 
-  def foreach( f: (Cell[D]) => Unit ) {
+  override def foreach( f: (Cell[D]) => Unit ) {
     regions.foreach(lattice,f) 
+  }
+
+  def elements() = {
+    var lst = List[Cell[D]]()
+    foreach( lst ::= _ )
+    lst.elements
   }
   
 }
