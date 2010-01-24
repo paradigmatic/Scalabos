@@ -4,5 +4,6 @@
 
 tmp/
 target/
+lib_managed/
 project/boot/
 project/build/target/
