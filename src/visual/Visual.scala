@@ -7,6 +7,10 @@ import org.jfree.chart.axis.NumberAxis
 import org.jfree.chart.renderer.xy.XYBlockRenderer
 import org.jfree.chart.renderer.GrayPaintScale
 import org.jfree.chart.JFreeChart
+import org.jfree.chart.ChartPanel
+import java.awt.Dimension
+import org.jfree.ui.ApplicationFrame
+
 
 object MatrixDataset {
 
@@ -32,9 +36,9 @@ object MatrixDataset {
 
 class Image( private val matrix: Array[Array[Double]] ) {
 
-  private lazy val dataset = MatrixDataset( matrix )
+  lazy val dataset = MatrixDataset( matrix )
 
-  private lazy val minMax: (Double,Double) = {
+  lazy val minMax: (Double,Double) = {
     def findMinMax( init: (Double,Double), 
                    ary: Array[Double]): (Double,Double) = {
       ary.foldLeft( init ) { 
@@ -50,7 +54,8 @@ class Image( private val matrix: Array[Array[Double]] ) {
       (scores, ary) => findMinMax(scores, ary)
     }
   }
-  private lazy val chart = {
+
+  lazy val chart = {
     val xAxis = new NumberAxis("x Axis")
     val yAxis = new NumberAxis("y Axis")
     val renderer = new XYBlockRenderer
@@ -64,6 +69,17 @@ class Image( private val matrix: Array[Array[Double]] ) {
     chart
   }
 
+  lazy val panel = new ChartPanel( chart )
+
+  def display() = new ChartFrame( panel )
+
+  class ChartFrame( val chartPanel: ChartPanel) extends ApplicationFrame("LB") {
+    chartPanel.setPreferredSize(new Dimension(640, 480));
+    chartPanel.setMouseZoomable(true, false);
+    setContentPane(chartPanel);
+    pack();
+    setVisible(true);  
+  }
 
 /*
    private static JFreeChart createChart(XYDataset dataset) {
