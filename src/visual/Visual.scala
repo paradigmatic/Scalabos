@@ -9,7 +9,10 @@ import org.jfree.chart.renderer.GrayPaintScale
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.ChartPanel
 import java.awt.Dimension
+import java.io.File
 import org.jfree.ui.ApplicationFrame
+import org.jfree.chart.ChartUtilities
+
 
 
 object MatrixDataset {
@@ -71,7 +74,28 @@ class Image( private val matrix: Array[Array[Double]] ) {
 
   lazy val panel = new ChartPanel( chart )
 
-  def display() = new ChartFrame( panel )
+  def display() { new ChartFrame( panel ) }
+
+  def saveAs( filename: String, width: Int, height: Int ) {
+    val errorMsg = "File extension not recognized. Currently allowed extension: jpeg, jpg, png"
+    val extRegexp = """^.+\.(.+)$""".r
+    val extRegexp( ext ) = filename
+    ext match {
+      case "png" => ChartUtilities.saveChartAsPNG( 
+        new File(filename),
+        chart,
+        width,
+        height
+      )
+      case "jpg" | "jpeg" => ChartUtilities.saveChartAsJPEG( 
+        new File(filename),
+        chart,
+        width,
+        height
+      )
+      case _ => throw new IllegalArgumentException( errorMsg )
+    }
+  }
 
   class ChartFrame( val chartPanel: ChartPanel) extends ApplicationFrame("LB") {
     chartPanel.setPreferredSize(new Dimension(640, 480));
