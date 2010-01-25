@@ -27,10 +27,15 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
       grid(iX)(iY).revert
     }
   }
- 
+
+
+  private lazy val half = D.q/2
+  private lazy val xRange = (0 until nX).toArray
+  private lazy val yRange = (0 until nY).toArray
+  private lazy val fRange = (1 to half).toArray  
   def stream() = {
     lazy val half = D.q/2
-    for (iX <- 0 until nX; iY <- 0 until nY; iPop <- 1 until half+1) {
+    for (iX <- xRange; iY <- yRange; iPop <- fRange) {
       // The modulo are used for default periodicity
       val nextX = (iX + D.c(iPop)(0) + nX) % nX
       val nextY = (iY + D.c(iPop)(1) + nY) % nY

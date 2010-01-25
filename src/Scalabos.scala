@@ -60,18 +60,21 @@ object Hello {
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
     
-    val maxT = 10
+    val maxT = 1000000
     
     val begin = Timer.go
     
     for (iT <- 0 until maxT) { lattice.collideAndStream }
       
     val end = Timer.stop
+
+    val msups = 1.0 * maxT * (units.nX*units.nY)/ (end-begin) / 1.0e3
+
     
-    println("MSUPS = ",maxT*(units.nX*units.nY)/ (end-begin) / 1.0e3)
-    println("Total Time = ",(end-begin)/1000.0)
+    println("MSUPS = " + msups )
+    println("Total Time = " + (end-begin)/1000.0 )
     
-    Image( lattice.map( _.rho ) ).display
+    //Image( lattice.map( _.rho ) ).display
     
   }
 }
