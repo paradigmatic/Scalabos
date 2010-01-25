@@ -4,47 +4,95 @@ import lb._
 
 trait Region {
    def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ): Unit
+  def and( other: Region ):Region = MultiRegion( this, other )
+  def &( other: Region )  = and( other )
+}
+
+case class MultiRegion( r1: Region, r2: Region ) extends Region {
+
+  private var regions = List( r1, r2  )
+  
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) {
+    regions.foreach( _.foreach( lattice, f ) )
+  }
+  
+  override def and( other: Region ) = {
+    regions ::= other
+    this
+  }
+
+}
+
+
+//TODO: decide convention about y direction
+
+case object NorthWall  extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    val y = lattice.nY - 1
+    for( x <- 0 until lattice.nX ) f( lattice(x,y) ) 
+     
+   }
+}
+
+case object SouthWall  extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    val y = 0
+    for( x <- 0 until lattice.nX ) f( lattice(x,y) ) 
+     
+   }
+}
+
+case object WestWall extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    val x = 0
+    for( y <- 0 until lattice.nY ) f( lattice(x,y) ) 
+     
+   }
+}
+
+case object EastWall extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    val x = lattice.nX - 1
+    for( y <- 0 until lattice.nY ) f( lattice(x,y) ) 
+     
+   }
 }
 
 case class Rectangle( val fromX: Int, val toX: Int,
                       val fromY: Int, val toY: Int) extends Region {
   //TODO: check bounds
   def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
-    println( "Call foreach of " + toString )
-     for( x <- fromX until toX; y <- fromY until toY ) {
-       println( x + " : " + y )
-       f( lattice(x,y) ) 
-     }
+     for( x <- fromX until toX; y <- fromY until toY ) f( lattice(x,y) ) 
+     
    }
 }
 
-
-class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: List[Region] ) {
-
-  def foreach( f: (Cell[D]) => Unit ) {
-    println( regions )
-    regions.foreach( _.foreach(lattice,f) )
+case class Where( val predicate: (Int,Int) => Boolean ) extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    for( x <- 0 until lattice.nX; 
+         y <- 0 until lattice.nY if predicate(x,y) ) f( lattice(x,y) )   
   }
-  
 }
 
-class SelectionBuilder {
-
-  private var regions = List[Region]()
-  
-  def andA( region: Region ) =  {
-    regions ::= region
-    this
+case object WholeDomain extends Region {
+  def foreach[D <: Descriptor]( lattice: Lattice2D[D], f: (Cell[D]) => Unit ) = {
+    for( x <- 0 until lattice.nX;   
+         y <- 0 until lattice.nY  ) f( lattice(x,y) )   
   }
-
-  def in[D <: Descriptor]( lattice: Lattice2D[D] )  =
-    new Selection( lattice, regions )
+  override def and( other: Region ) = this
 
 }
 
-object Select {
-  def a( region: Region ) = {
-    val builder = new SelectionBuilder
-    builder.andA( region )
+class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) extends Iterable[Cell[D]]{
+
+  override def foreach( f: (Cell[D]) => Unit ) {
+    regions.foreach(lattice,f) 
   }
+
+  lazy val elements = {
+    var lst = List[Cell[D]]()
+    foreach( lst ::= _ )
+    lst.elements
+  }
+  
 }

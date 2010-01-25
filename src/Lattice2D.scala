@@ -1,6 +1,7 @@
 package lb
 
 import lb.dyn._
+import lb.select._
 import lb.util.Util._
 
 class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
@@ -42,4 +43,16 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
   }
 
   def collideAndStream() = { collide; stream }
+
+  def map[A]( f: Cell[T] => A ) = {
+    val ary = new Array[Array[A]](nX,nY)
+    for( iX <- 0 until nX; iY <- 0 until nY) {
+      ary(iX)(iY) = f( grid(iX)(iY) )
+    }
+    ary
+  }
+
+  def select( region: Region ) = new Selection( this, region )
+
+  override lazy val toString = "Lattice("+D+", sizeX="+nX+", sizeY="+nY+")"
 }

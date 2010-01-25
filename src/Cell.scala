@@ -24,4 +24,6 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
 
   def u() = dyn.u(f,rho)
 
+  override def toString() = "Cell("+ dyn+", rho=" + rho + ", u=" + u.toString +")"
+
 }
