@@ -1,7 +1,7 @@
 package lb.units
 
-class UnitsConverter[T <: Descriptor](D:T, val Re:Double, val physVel:Double,lbVel:Double,
-                                     physLength:Double,lbLength:Int,lx:Double,ly:Double) {
+class UnitsConverter[T <: Descriptor](val D:T, val Re:Double, val physVel:Double, val lbVel:Double,
+                                      val physLength:Double,val lbLength:Int,val lx:Double,val ly:Double) {
   
       def deltaX() : Double = physLength / lbLength
 

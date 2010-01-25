@@ -3,6 +3,8 @@ package lb
 // import lb._
 import lb.dyn._
 import lb.units._
+import lb.simSetup._
+import lb.util._
 
 object Timer {
   var start:Long = 0L
@@ -13,6 +15,32 @@ object Timer {
   def stop = {
     System.currentTimeMillis
   }
+}
+
+class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val n:Int) {
+  
+  def density(iX:Int, iY:Int) = {
+    lazy val pi = 4.0 * Math.atan(1.0)
+    val x = iX.toDouble / (units.nX-1).toDouble
+    val y = iY.toDouble / (units.nY-1).toDouble
+    
+    val pressure = -Util.sqr(pi* units.deltaT / units.deltaX) *(n*n*Math.cos(4.0*pi*m*x)+m*m*Math.cos(4.0*pi*n*y))
+    1.0+pressure * 3.0
+  }
+  
+  def velocity(iX:Int, iY:Int) : Array[Double] = {
+    lazy val pi = 4.0 * Math.atan(1.0)
+    val x = iX.toDouble / (units.nX-1).toDouble
+    val y = iY.toDouble / (units.nY-1).toDouble
+    
+    val u = new Array[Double](2)
+    
+    u(0) = units.lbVel * (- n * 2.0 * pi * Math.sin(n * y * 2.0 * pi) * Math.cos(m * x * 2.0 * pi))
+    u(1) = units.lbVel * (  m * 2.0 * pi * Math.sin(m * x * 2.0 * pi) * Math.cos(n * y * 2.0 * pi))
+    
+    u
+  }
+  
 }
 
 object Hello {

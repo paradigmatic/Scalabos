@@ -12,6 +12,10 @@ object Util {
     copy
   }
   
+  def sqr( u:Double ) = {
+    u * u
+  }
+  
   def swap( i:Int, j:Int, f:Array[Double]) : Unit = {
     val tmp = f(i)
     f(i) = f(j)

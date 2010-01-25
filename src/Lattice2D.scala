@@ -14,7 +14,7 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     g
   }
   
-  val boundingBox = new Box2D(0,nX-1,0,0,nY-1)
+  val boundingBox = new Box2D(0,nX-1,0,nY-1)
   
   def apply( x: Int, y: Int ) = grid(x)(y)
 
