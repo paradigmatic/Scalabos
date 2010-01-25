@@ -2,18 +2,11 @@ package lb.util
 
 import Math._
 
-object Util {
-  
-  class Box2D(val x0:Int,val x1:Int, val y0:Int, val y1:Int) {}
-
+object Arrays {
   def copyArray[A]( ary: Array[A] ) = {
     val copy = new Array[A]( ary.size )
     Array.copy( ary, 0, copy, 0, ary.size )
     copy
-  }
-  
-  def sqr( u:Double ) = {
-    u * u
   }
   
   def swap( i:Int, j:Int, f:Array[Double]) : Unit = {
@@ -37,16 +30,24 @@ object Util {
   def normSqr(u:Array[Double]) : Double = { dot(u,u) }
   
   def norm(u:Array[Double]) : Double = { sqrt(normSqr(u)) }
-
+  
   def dump[T](filename: String, matrix: Array[Array[T]] ) {
     import java.io._
     val out = new PrintWriter( new File( filename ) )
     matrix foreach { 
       row =>
-        out println row.mkString(" ") 
+      out println row.mkString(" ") 
     }
     out close
     
   }
-    
+  }
+
+object Doubles {
+  
+//   class Box2D(val x0:Int,val x1:Int, val y0:Int, val y1:Int) {}
+  
+  def sqr( u:Double ) = {
+    u * u
+  }
 }

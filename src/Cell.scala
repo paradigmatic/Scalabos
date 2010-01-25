@@ -1,7 +1,7 @@
 package lb
 
 import lb.dyn._
-import lb.util.Util._
+import lb.util.Arrays._
 
 class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
 

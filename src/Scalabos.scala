@@ -5,6 +5,7 @@ import lb.dyn._
 import lb.units._
 import lb.simSetup._
 import lb.util._
+import lb.visual._
 
 object Timer {
   var start:Long = 0L
@@ -24,7 +25,7 @@ class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val
     val x = iX.toDouble / (units.nX-1).toDouble
     val y = iY.toDouble / (units.nY-1).toDouble
     
-    val pressure = -Util.sqr(pi* units.deltaT / units.deltaX) *(n*n*Math.cos(4.0*pi*m*x)+m*m*Math.cos(4.0*pi*n*y))
+    val pressure = -Doubles.sqr(pi* units.deltaT / units.deltaX) *(n*n*Math.cos(4.0*pi*m*x)+m*m*Math.cos(4.0*pi*n*y))
     1.0+pressure * 3.0
   }
   
@@ -48,7 +49,7 @@ object Hello {
   def main( args: Array[String] ) : Unit = {
     println("The first Scala lattice Boltzmann Solver (Scalabos) code EVER!!!")
     val physLength = 1.0
-    val lbLength   = 100
+    val lbLength   = 10
     val physVel    = 1.0
     val lbVel      = 0.01
     val Re         = 1.0
@@ -59,7 +60,7 @@ object Hello {
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
     
-    val maxT = 100
+    val maxT = 10
     
     val begin = Timer.go
     
@@ -69,6 +70,8 @@ object Hello {
     
     println("MSUPS = ",maxT*(units.nX*units.nY)/ (end-begin) / 1.0e3)
     println("Total Time = ",(end-begin)/1000.0)
+    
+    Image( lattice.map( _.rho ) ).display
     
   }
 }

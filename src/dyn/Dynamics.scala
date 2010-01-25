@@ -1,6 +1,6 @@
 package lb.dyn
 
-import lb.util.Util._
+import lb.util.Arrays._
 
 abstract class Dynamics[T <: Descriptor](val D:T) {
   
@@ -51,5 +51,5 @@ class BGKdynamics[T <: Descriptor](override val D:T, var omega:Double) extends I
     }
   }
 
-  override lazy val toString = "BGK("+D+", omega="+om+")"
+  override lazy val toString = "BGK("+D+", omega="+omega+")"
 }
