@@ -120,6 +120,14 @@ class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) exten
     }
   }
 
+
+ def foreach( f: (Int, Int, Cell[D]) => Unit ) {
+    indices.foreach { 
+      ind =>
+        f( ind._1, ind._2, lattice( ind._1, ind._2 ) )
+    }
+  }
+
   lazy val elements = {
     var lst = List[Cell[D]]()
     foreach( lst ::= _ )
