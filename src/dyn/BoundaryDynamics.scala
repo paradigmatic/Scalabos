@@ -31,8 +31,7 @@ abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:
 		val rhoOnWall = Indexes.extractSubArray(f,onWallIndices).reduceLeft(_+_)
 		// rhoOnWall is the sum of f_i s that are parallel to the wall's normal
 		val rhoNormal = Indexes.extractSubArray(f,normalIndices).reduceLeft(_+_)
-    val uNormal = orient * uBC(dir)
-    (2*rhoNormal+rhoOnWall-0*uNormal) / (1.0+uNormal)
+    (2*rhoNormal+rhoOnWall) / (1.0+orient * uBC(dir))
   }
   
   def u( f: Array[Double], rho: Double ) = uBC
@@ -61,4 +60,13 @@ abstract class RegularizedVelocityBoundaryCondition[T <: Descriptor]
 		}
 		piNeq
 	}
+	
+	def completePopulations(f:Array[Double]) {
+		val density = rho(f)
+		val vel = u(f,density)
+		val piNeq = deviatoricStress(f,density,vel)
+		piNeq
+// 		f = baseDyn.regularize(density,vel,piNeq)
+	}
+
 }

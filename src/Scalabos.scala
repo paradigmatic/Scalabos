@@ -6,6 +6,7 @@ import lb.units._
 import lb.simSetup._
 import lb.util._
 import lb.visual._
+import lb.select._
 
 object Timer {
   var start:Long = 0L
@@ -49,7 +50,7 @@ object Hello {
   def main( args: Array[String] ) : Unit = {
     println("The first Scala lattice Boltzmann Solver (Scalabos) code EVER!!!")
     val physLength = 1.0
-    val lbLength   = 10
+    val lbLength   = 100
     val physVel    = 1.0
     val lbVel      = 0.01
     val Re         = 1.0
@@ -59,12 +60,23 @@ object Hello {
     val units = new UnitsConverter(D2Q9, Re, physVel,lbVel,physLength,lbLength,lx,ly)
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
+    val rho = lattice.map( _.rho )
+			val img = lb.visual.Image( rho )
+			img.display 
     
-    val maxT = 1000000
+    val ini = new TaylorGreen2D(units,1,1)
+    
+    val allLattice = new Selection(lattice,WholeDomain)
+    allLattice.foreach(SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)_)
+    
+    
+    val maxT = 100
     
     val begin = Timer.go
     
-    for (iT <- 0 until maxT) { lattice.collideAndStream }
+    for (iT <- 0 until maxT) { 
+			lattice.collideAndStream 
+		}
       
     val end = Timer.stop
 
