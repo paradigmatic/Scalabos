@@ -61,7 +61,7 @@ object Hello {
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
     val rho = lattice.map( _.rho )
-			val img = lb.visual.Image( rho )
+			val img = lb.visual.Image( rho )
 			img.display 
     
     val ini = new TaylorGreen2D(units,1,1)
@@ -70,23 +70,24 @@ object Hello {
     allLattice.foreach(SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)_)
     
     
-    val maxT = 100
-    
-    val begin = Timer.go
+    val maxT = 100000
+
+      val begin = Timer.go
     
     for (iT <- 0 until maxT) { 
 			lattice.collideAndStream 
 		}
       
-    val end = Timer.stop
+      val end = Timer.stop
 
-    val msups = 1.0 * maxT * (units.nX*units.nY)/ (end-begin) / 1.0e3
+      val msups = 1.0 * maxT * (units.nX*units.nY)/ (end-begin) / 1.0e3
 
     
-    println("MSUPS = " + msups )
-    println("Total Time = " + (end-begin)/1000.0 )
-    
+      println("MSUPS = " + msups )
+      println("Total Time = " + (end-begin)/1000.0 )
+      System.gc
+      System.gc
+    }
     //Image( lattice.map( _.rho ) ).display
     
   }
-}
