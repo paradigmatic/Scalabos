@@ -60,9 +60,6 @@ object Hello {
     val units = new UnitsConverter(D2Q9, Re, physVel,lbVel,physLength,lbLength,lx,ly)
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
-    val rho = lattice.map( _.rho )
-			val img = lb.visual.Image( rho )
-			img.display 
     
     val ini = new TaylorGreen2D(units,1,1)
     
@@ -76,6 +73,7 @@ object Hello {
     
     for (iT <- 0 until maxT) { 
 			lattice.collideAndStream 
+// 			Image( lattice.map( _.rho ) ).display
 		}
       
       val end = Timer.stop
@@ -87,7 +85,5 @@ object Hello {
       println("Total Time = " + (end-begin)/1000.0 )
       System.gc
       System.gc
-    }
-    //Image( lattice.map( _.rho ) ).display
-    
   }
+}
