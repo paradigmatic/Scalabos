@@ -2,18 +2,20 @@ package lb
 
 trait Descriptor {
 
-  val q: Int
-  val d: Int
-  val c: Array[Array[Int]]
-  val t: Array[Double]
-  val invCs2: Double
-  lazy val cs2 = 1.0 / invCs2
+  val q: Int 									// The number of velocities
+  val d: Int 									// The number physical dimensions of a lattice
+  val n: Int 									// The number of independet components of a symmetric tensor
+  val c: Array[Array[Int]] 		// velocities of the lattice
+  val t: Array[Double] 				// Weights associated with the lattice velocities
+  val invCs2: Double 					// Sound speed squared inverse
+  lazy val cs2 = 1.0 / invCs2 // sound speed squared
   override lazy val toString = "D"+d+"Q"+q
 }
 
 object D2Q9 extends Descriptor {
   val q = 9
   val d = 2
+  val n = 3
   val c = Array( Array(0,0),
                  Array(-1, 1), Array(-1, 0), Array(-1,-1), Array(0,-1),
                  Array( 1,-1), Array( 1, 0), Array( 1, 1), Array(0, 1) )

@@ -13,9 +13,12 @@ abstract class Dynamics[T <: Descriptor](val D:T) {
 
 }
 
-abstract class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
+  
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = D.t(iPop)
+  
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
 
