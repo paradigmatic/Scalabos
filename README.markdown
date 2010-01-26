@@ -10,7 +10,7 @@ Installation
 
 The current release is an experimental-pre-alpha-proof-of-concept
 release. So its prehaps better to wait a bit... Honestly, it is not
-able to compute the physics correctly but it is already can produce
+able to compute the physics correctly but it can already produce
 nice (but useless) pictures.
 
 If you want to give it a try, you will need to:
