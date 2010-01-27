@@ -27,7 +27,7 @@ class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val
     val y = iY.toDouble / (units.nY-1).toDouble
     
     val pressure = -Doubles.sqr(pi* units.deltaT / units.deltaX) *(n*n*Math.cos(4.0*pi*m*x)+m*m*Math.cos(4.0*pi*n*y))
-    1.0+pressure * 3.0
+    1.0+pressure * units.D.invCs2
   }
   
   def velocity(iX:Int, iY:Int) : Array[Double] = {
@@ -69,17 +69,14 @@ object Hello {
     
     val maxT = 1000
     val logT = 10
-    
+
     for( o <- 0 until 10 ) {
       val begin = Timer.go  
       
-      
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        lattice.collideAndStream 
+        lattice.collideAndStream
       }
-      
-      
       
       val end = Timer.stop
       //Image( lattice.map( _.rho ) ).display

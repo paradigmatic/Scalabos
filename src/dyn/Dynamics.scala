@@ -10,6 +10,7 @@ abstract class Dynamics[T <: Descriptor](val D:T) {
   
   def rho( f: Array[Double]): Double
   def u( f: Array[Double], rho: Double ): Array[Double]
+  def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double]) : Array[Double]
 
 }
 
@@ -21,6 +22,7 @@ class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
   
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
+  def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
 
 }
 
@@ -35,7 +37,7 @@ class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
   
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
-  
+  def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
 }
 
 abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
@@ -48,6 +50,23 @@ abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends
     for( iPop <- myPopIndices; iD <- D.dimIndices) vel(iD) += D.c(iPop)(iD)*f(iPop)
     vel.map(_ / rho)
   }
+  
+  def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double]) : Array[Double] = {
+		var iPi = 0
+		val piNeq = new Array[Double](D.n)
+		for (iA <- D.dimIndices) { 
+			val iDiag = iPi
+			for (iB <- iA until D.d) { 
+				for (iPop <- myPopIndices) {
+					piNeq(iPi) += D.c(iPop)(iA)*D.c(iPop)(iB)*f(iPop)
+				}
+				piNeq(iPi) -= rho*u(iA)*u(iB)
+				iPi += 1
+			}
+			piNeq(iDiag) -= D.cs2 * rho
+		}
+		piNeq
+	}
 }
 
 class BGKdynamics[T <: Descriptor](override val D:T, var omega:Double) extends IncompressibleDynamics(D) {
