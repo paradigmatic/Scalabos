@@ -65,23 +65,18 @@ object Hello {
     val ini = new TaylorGreen2D(units,1,1)
 
     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
-    
-    lattice select WholeDomain foreach applyInitialSetup
-    
+    lattice.select(WholeDomain).foreach(applyInitialSetup)
     
     val maxT = 1000
     val logT = 10
     
     for( o <- 0 until 10 ) {
-      
-     //Image( lattice.map( _.rho ) ).display
-      val begin = Timer.go
+      val begin = Timer.go  
       
       
       for (iT <- 0 until maxT) { 
-	// if (iT % logT == 0) println("This iteration is for you baby "+iT)
-	lattice.collideAndStream 
-	//      Image( lattice.map( _.rho ) ).display 
+//         if (iT % logT == 0) println("This iteration is for you baby "+iT)
+        lattice.collideAndStream 
       }
       
       
@@ -98,5 +93,4 @@ object Hello {
     }
   }
   //Image( lattice.map( _.rho ) ).display
-  
 }

@@ -17,11 +17,25 @@ class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
   
-  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = D.t(iPop)
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
   
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
 
+}
+
+class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
+  
+  def apply( f: Array[Double] ) {  
+    lazy val half = D.q/2
+    for (iPop <- 1 until half+1) swap(iPop,iPop+half,f)
+  }
+  
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
+  
+  def rho( f: Array[Double]) = 1.0
+  def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
+  
 }
 
 abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
