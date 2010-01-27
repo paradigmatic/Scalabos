@@ -20,14 +20,14 @@ object Arrays {
   def dot(u:Array[Double], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
-    for( iD <- 1 until u.size) { res += u(iD)*v(iD) }
+    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
     res
   }
   
   def dot(u:Array[Int], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
-    for( iD <- 1 until u.size) { res += u(iD)*v(iD) }
+    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
     res
   }
   
