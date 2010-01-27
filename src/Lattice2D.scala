@@ -7,20 +7,27 @@ import lb.util.Arrays._
 class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
 		 val defaultDynamics: Dynamics[T] )  {
 
+
+  private lazy val half = D.q/2
+  private lazy val xRange = (0 until nX).toList
+  private lazy val yRange = (0 until nY).toList
+  private lazy val fRange = (1 to half).toList  
+
   private val grid = {
     val g = new Array[Array[Cell[T]]](nX,nY)
-    for( iX <- 0 until nX; iY <- 0 until nY ) {
+    for( iX <- xRange; iY <- yRange ) {
       g(iX)(iY) = new Cell(defaultDynamics)
     }
     g
   }
   
 //   val boundingBox = new Box2D(0,nX-1,0,nY-1)
-  
+
+
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
-    for (iX <- 0 until nX; iY <- 0 until nY) {
+    for (iX <- xRange; iY <- yRange) {
       grid(iX)(iY).collide
       // The collided populations are swapped with their opposite direction
       // this step is needed by the streaming step.
@@ -29,10 +36,7 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
   }
 
 
-  private lazy val half = D.q/2
-  private lazy val xRange = (0 until nX).toArray
-  private lazy val yRange = (0 until nY).toArray
-  private lazy val fRange = (1 to half).toArray  
+ 
   def stream() = {
     lazy val half = D.q/2
     for (iX <- xRange; iY <- yRange; iPop <- fRange) {
@@ -51,7 +55,7 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
 
   def map[A]( f: Cell[T] => A ) = {
     val ary = new Array[Array[A]](nX,nY)
-    for( iX <- 0 until nX; iY <- 0 until nY) {
+    for( iX <- xRange; iY <- yRange) {
       ary(iX)(iY) = f( grid(iX)(iY) )
     }
     ary

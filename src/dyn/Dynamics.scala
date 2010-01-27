@@ -13,20 +13,39 @@ abstract class Dynamics[T <: Descriptor](val D:T) {
 
 }
 
-abstract class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
+  
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
+  
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
 
 }
 
+class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
+  
+  def apply( f: Array[Double] ) {  
+    lazy val half = D.q/2
+    for (iPop <- 1 until half+1) swap(iPop,iPop+half,f)
+  }
+  
+  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
+  
+  def rho( f: Array[Double]) = 1.0
+  def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
+  
+}
+
 abstract class IncompressibleDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+
+  private lazy val myPopIndices = (1 until D.q).toList
 
   def rho( f: Array[Double]): Double =  f.reduceLeft(_+_)
   def u( f: Array[Double], rho: Double ) = {
     val vel = new Array[Double](D.d)
-    for( iPop <- 1 until D.q; iD <- 0 until D.d) vel(iD) += D.c(iPop)(iD)*f(iPop)
+    for( iPop <- myPopIndices; iD <- D.dimIndices) vel(iD) += D.c(iPop)(iD)*f(iPop)
     vel.map(_ / rho)
   }
 }
@@ -45,7 +64,7 @@ class BGKdynamics[T <: Descriptor](override val D:T, var omega:Double) extends I
     val vel:Array[Double] = u(f,dens)
     val velSqr = normSqr(vel)
     
-    for (iPop <- 0 until D.q) { 
+    for (iPop <- D.popIndices) { 
       f(iPop) *= (1.0 - omega)
       f(iPop) += omega*equilibrium(iPop,dens,vel,velSqr)
     }

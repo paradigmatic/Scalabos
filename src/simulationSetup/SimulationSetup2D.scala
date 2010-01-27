@@ -1,16 +1,24 @@
 package lb.simSetup
 
-import lb.util.Arrays._
+import lb.util._
 
 object SimSetup {
-  def iniAtEquilibrium[T <: Descriptor](fRho : (Int, Int) => Double, fU : (Int,Int) => Array[Double])
-                                       (lattice:Lattice2D[T]) {
-//     for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1; iPop <- 0 until lattice.D.q) {
-//       val rho  = fRho(iX,iY)
-//       val u    = fU(iX,iY)
-//       val uSqr = dot(u,u)
-//       lattice(iX,iY)(iPop) = lattice(iX,iY).dyn.equilibrium(iPop,rho,u,uSqr)
-//     }
+  private def equilibriumInitializion[T <: Descriptor](D:T,fRho : (Int,Int) => Double, fU : (Int, Int) => Array[Double])
+  (iX:Int, iY:Int, cell:Cell[T]) = {
+    val density = fRho(iX,iY)
+    val velocity = fU(iX,iY)
+    val velSqr = Arrays.normSqr(velocity)
+    
+    for (iPop <- 0 until D.q) {
+      cell(iPop) = cell.dyn.equilibrium(iPop,density,velocity,velSqr)
+    }
+  }
+
+  def iniAtEquilibrium[T <: Descriptor](D:T,
+					fRho : (Int,Int) => Double, 
+					fU : (Int, Int) => Array[Double]
+				      ): (Int,Int,Cell[T]) => Unit = {
+    equilibriumInitializion(D,fRho,fU)_ 
   }
 }
 
