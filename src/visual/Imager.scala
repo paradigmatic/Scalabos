@@ -9,13 +9,13 @@ class Imager( val lattice: Lattice2D[_],
 
   private val fmt = "%s_%05d.png"
   
-  private var i = 0
+  private[this] var i = -1
 
   def click() {
+    i += 1
     actor {
       val filename = fmt.format( prefix, i )
       //println( "CLICK called with filename=" + filename )
-      i += 1
       //println( "i="+i )
       Image( producer( lattice ) ).saveAs( filename, 600, 400 )
     }
