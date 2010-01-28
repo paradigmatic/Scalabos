@@ -31,15 +31,21 @@ abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:
 		val rhoOnWall = Indexes.extractSubArray(f,onWallIndices).reduceLeft(_+_)
 		// rhoOnWall is the sum of f_i s that are parallel to the wall's normal
 		val rhoNormal = Indexes.extractSubArray(f,normalIndices).reduceLeft(_+_)
-    (2*rhoNormal+rhoOnWall) / (1.0+orient * uBC(dir))
+    (2.0*rhoNormal+rhoOnWall) / (1.0+orient * uBC(dir))
   }
   
   def u( f: Array[Double], rho: Double ) = uBC
 }
 
-abstract class RegularizedVelocityBoundaryCondition[T <: Descriptor]
+class RegularizedVelocityBoundaryCondition[T <: Descriptor]
 							 (override val D:T, vel:Array[Double], 
 								override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,vel,dir,orient) {
+                  
+  def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
+  def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)
+  
+  override def regularize(iPop:Int,rho:Double, u:Array[Double], piNeq:Array[Double]) : Double = baseDyn.regularize(iPop,rho,u,piNeq)
+  override def regularize(rho:Double, u:Array[Double], piNeq:Array[Double]) : Array[Double] = baseDyn.regularize(rho,u,piNeq)
 									
 	def deviatoricStress(f:Array[Double], density:Double, vel:Array[Double]) : Array[Double] = {
 		val uSqr = Arrays.normSqr(uBC)
@@ -49,7 +55,7 @@ abstract class RegularizedVelocityBoundaryCondition[T <: Descriptor]
 				
 		for (iPop <- normalIndices) {
 				if (iPop == 0) fNeq(iPop) = 0
-				else fNeq(iPop) = f(iPop) - baseDyn.equilibrium(iPop, density, uBC, uSqr)
+				else fNeq(iPop) = f(iPop) - equilibrium(iPop, density, uBC, uSqr)
 		}
 		var iPi = 0
 		val piNeq = new Array[Double](D.n)
@@ -65,8 +71,7 @@ abstract class RegularizedVelocityBoundaryCondition[T <: Descriptor]
 		val density = rho(f)
 		val vel = u(f,density)
 		val piNeq = deviatoricStress(f,density,vel)
-		piNeq
-// 		f = baseDyn.regularize(density,vel,piNeq)
+    for (iPop <- D.popIndices) f(iPop) = regularize(iPop, density, vel, piNeq)
 	}
 
 }

@@ -52,7 +52,7 @@ object Hello {
       
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain))
+        println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
         lattice.collideAndStream
       }
       

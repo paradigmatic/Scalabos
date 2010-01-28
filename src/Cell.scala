@@ -15,6 +15,10 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
   
   def D() : Descriptor = dyn.D
   
+  def defineDynamics( dynamics:Dynamics[T] ) = {
+    dyn = dynamics
+  }
+  
   def revert(): Unit = {
     for (iPop <- oneToHalfRange) { swap(iPop,iPop+half,f) }
   }
