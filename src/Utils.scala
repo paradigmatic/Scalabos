@@ -5,11 +5,18 @@ import Math._
 object Arrays {
   def copyArray[A]( ary: Array[A] ) = {
 		// return the copy of an array
-    val copy = new Array[A]( ary.size )
-    Array.copy( ary, 0, copy, 0, ary.size )
+    val copy = new Array[A]( ary.length )
+    Array.copy( ary, 0, copy, 0, ary.length )
     copy
   }
-  
+
+  def copyArrayDouble( ary: Array[Double] ) = {
+    // return the copy of an array
+    val copy = new Array[Double]( ary.length )
+    Array.copy( ary, 0, copy, 0, ary.length )
+    copy
+  }
+
   def swap( i:Int, j:Int, f:Array[Double]) : Unit = {
 		// swaps the elements i with element j in a array f.
     val tmp = f(i)
@@ -56,8 +63,8 @@ object Indexes {
   def extractSubArray[T](origArray:Array[T], subInd:Array[Int]) : Array[T] = {
 		// Given an array of indices, returns an array containing the components
 		// corresponding to the indices of an original array.
-		val subArray = new Array[T](subInd.size)
-		for (iPop <- 0 until subInd.size) subArray(iPop) = origArray(subInd(iPop))
+		val subArray = new Array[T](subInd.length)
+		for (iPop <- 0 until subInd.length) subArray(iPop) = origArray(subInd(iPop))
 		subArray
 	}
 }
