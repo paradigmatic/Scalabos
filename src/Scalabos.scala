@@ -42,7 +42,7 @@ object Hello {
     val ini = new TaylorGreen2D(units,1,1)
 //     val ini = new Poiseuille2D(units,0)
 
-    val imager = new Imager( lattice, "tmp/machin", (l) => l.map( (c:Cell[_]) => c.rho) )
+    val imager = new Imager(  "tmp/machin", lattice.map( _.rho ) )
 
     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
     lattice.select(WholeDomain).foreach(applyInitialSetup)
