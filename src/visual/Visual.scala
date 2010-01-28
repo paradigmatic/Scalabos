@@ -30,7 +30,7 @@ object MatrixDataset {
     val xs = new ArrayBuffer[Double]
     val ys = new ArrayBuffer[Double]
     val zs = new ArrayBuffer[Double]
-    for( i <- 0 until matrix.size; j <- 0 until matrix(0).size) {
+    for( i <- 0 until matrix.length; j <- 0 until matrix(0).length) {
       xs += i
       ys += j
       zs += matrix(i)(j)

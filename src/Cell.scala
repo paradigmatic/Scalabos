@@ -7,7 +7,7 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
 	private lazy val half = D.q/2
 	private lazy val oneToHalfRange = (1 to half).toList  
 	
-  private var f = copyArray( D.t )
+  private var f = copyArrayDouble( D.t )
   
   def apply(iPop:Int) : Double = f(iPop)
 
