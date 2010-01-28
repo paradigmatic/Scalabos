@@ -18,6 +18,8 @@ import org.jfree.chart.title.PaintScaleLegend
 import org.jfree.chart.axis.AxisLocation
 import org.jfree.ui.RectangleInsets
 import org.jfree.ui.RectangleEdge
+import org.jfree.data.xy.DefaultXYZDataset
+import org.jfree.data.xy.XYZDataset
 
 
 object MatrixDataset {
@@ -109,9 +111,12 @@ class Image( private val matrix: Array[Array[Double]] ) {
 
   lazy val panel = new ChartPanel( chart )
 
-  def display() { new ChartFrame( panel ) }
+  def display() = { 
+    new ChartFrame( panel )
+    this
+  }
 
-  def saveAs( filename: String, width: Int, height: Int ) {
+  def saveAs( filename: String, width: Int, height: Int ) =  {
     val errorMsg = "File extension not recognized. Currently allowed extension: jpeg, jpg, png"
     val extRegexp = """^.+\.(.+)$""".r
     val extRegexp( ext ) = filename
@@ -130,6 +135,16 @@ class Image( private val matrix: Array[Array[Double]] ) {
       )
       case _ => throw new IllegalArgumentException( errorMsg )
     }
+    this
+  }
+
+  def update( ds: XYZDataset ) {
+      plot.setDataset( ds )
+  }
+
+  def update( matrix: Array[Array[Double]] ) {
+    println("Update called")
+    plot.setDataset( MatrixDataset( matrix ) )
   }
 
   class ChartFrame( val chartPanel: ChartPanel) extends ApplicationFrame("LB") {
