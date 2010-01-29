@@ -15,14 +15,14 @@ abstract class CompositeDynamics[T <: Descriptor](override val D:T) extends Dyna
 	}
 }
 
-
-
 abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
 
 	var uBC = new Array[Double](D.d)
 	
 	lazy val onWallIndices = Indexes.subIndex(D,dir,0)
 	lazy val normalIndices = Indexes.subIndex(D,dir,orient)
+  
+  def copy() : DirichletVelocityDynamics[T]
 	
   override def defineVelocity(u:Array[Double]) = {uBC = u}
 
@@ -40,6 +40,10 @@ abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, val 
 class RegularizedVelocityBoundaryCondition[T <: Descriptor]
 							 (override val D:T, 
 								override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
+                  
+  def copy() = {
+    new RegularizedVelocityBoundaryCondition(D, dir, orient)
+  }
                   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
   def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)

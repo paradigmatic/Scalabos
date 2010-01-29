@@ -25,7 +25,7 @@ object Hello {
   def main( args: Array[String] ) : Unit = {
     println("The first Scala lattice Boltzmann Solver (Scalabos) code EVER!!!")
     val physLength = 1.0
-    val lbLength   = 20
+    val lbLength   = 50
     val physVel    = 1.0
     val lbVel      = 0.01
     val Re         = 1.0
@@ -54,10 +54,10 @@ object Hello {
     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
     lattice.select(WholeDomain).foreach(applyInitialSetup)
 //     Image( lattice.map( _.rho ) ).display
-//     Image( lattice.map( C => Arrays.normSqr(C.u) ) ).display
+//     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 1000
-    val logT = 10
+    val maxT = 100
+    val logT = 1
 
 //     for( o <- 0 until 10 ) {
       val begin = Timer.go  
@@ -68,6 +68,8 @@ object Hello {
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
         lattice.collideAndStream
       }
+      
+      Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
       
       val end = Timer.stop
       //Image( lattice.map( _.rho ) ).display
