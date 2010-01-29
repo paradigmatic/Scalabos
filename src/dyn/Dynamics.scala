@@ -33,7 +33,7 @@ class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
   
-  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
+  def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) = D.t(iPop)
   def fOne(iPop:Int,piNeq:Array[Double]) = 0.0
   
   def rho( f: Array[Double]) = 1.0
@@ -49,7 +49,7 @@ class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
     for (iPop <- 1 until half+1) Arrays.swap(iPop,iPop+half,f)
   }
   
-  def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) = 0.0
+  def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) = D.t(iPop)
   def fOne(iPop:Int,piNeq:Array[Double]) = 0.0
   
   def rho( f: Array[Double]) = 1.0

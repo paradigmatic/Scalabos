@@ -48,8 +48,6 @@ object Hello {
 
     dynInterfaces.defineDynamics(lattice, NorthWall, new BounceBack(D2Q9))
     dynInterfaces.defineDynamics(lattice, SouthWall, new BounceBack(D2Q9))
-    
-    
 
     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
     lattice.select(WholeDomain).foreach(applyInitialSetup)
@@ -69,7 +67,7 @@ object Hello {
         lattice.collideAndStream
       }
       
-      Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
+//       Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
       
       val end = Timer.stop
       //Image( lattice.map( _.rho ) ).display
