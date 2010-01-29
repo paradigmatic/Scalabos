@@ -108,10 +108,16 @@ case object WholeDomain extends Region {
   override def and( other: Region ) = this
 }
 
+abstract class Selection[R <: Region]( val lattice: Lattice2D, val region: R )
+extends Iterable[Cell] {
+  def indices: Set[(Int,Int)]
 
-class Selection( lattice: Lattice2D, regions: Region ) extends Iterable[Cell]{
-  
-  lazy val indices = regions.indices( lattice )
+  def foreach( f: (Int, Int, Cell) => Unit ) {
+    indices.foreach { 
+      ind =>
+        f( ind._1, ind._2, lattice( ind._1, ind._2 ) )
+    }
+  }
 
   override def foreach( f: (Cell) => Unit ) {
     indices.foreach { 
@@ -120,19 +126,17 @@ class Selection( lattice: Lattice2D, regions: Region ) extends Iterable[Cell]{
     }
   }
 
-
- def foreach( f: (Int, Int, Cell) => Unit ) {
-    indices.foreach { 
-      ind =>
-        f( ind._1, ind._2, lattice( ind._1, ind._2 ) )
-    }
-  }
-
   lazy val elements = {
     var lst = List[Cell]()
     foreach( lst ::= _ )
     lst.elements
   }
+}
+
+class ComplexSelection[R <: Region]( lattice: Lattice2D, region: R )  
+extends Selection[R](lattice, region ){
   
+  lazy val indices = region.indices( lattice )
+
 }
 
