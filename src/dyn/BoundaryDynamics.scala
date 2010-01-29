@@ -2,10 +2,10 @@ package lb.dyn
 
 import lb.util._
 
-abstract class compositeDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+abstract class CompositeDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 	var baseDyn:Dynamics[T] = new NoDynamics(D)
 	
-	def defineBaseDyn(dyn:Dynamics[T]) = { baseDyn = dyn }
+	def defineBaseDynamics(dyn:Dynamics[T]) = { baseDyn = dyn }
 	
 	def completePopulations(f:Array[Double]) : Unit
 	
@@ -17,7 +17,7 @@ abstract class compositeDynamics[T <: Descriptor](override val D:T) extends Dyna
 
 
 
-abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:Array[Double], val dir:Int, val orient:Int) extends compositeDynamics(D) {
+abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:Array[Double], val dir:Int, val orient:Int) extends CompositeDynamics(D) {
 
 	var uBC = vel
 	
