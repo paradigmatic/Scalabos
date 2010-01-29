@@ -2,9 +2,11 @@ package lb.dyn
 
 import lb.util._
 
-abstract class Dynamics[T <: Descriptor](val D:T) {
+abstract class Dynamics(val D: Descriptor) {
   
   def apply( f: Array[Double] ): Unit
+  
+  def defineVelocity(u:Array[Double]) {}
   
   def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) : Double
   def fOne(iPop:Int,piNeq:Array[Double]) : Double
@@ -27,7 +29,7 @@ abstract class Dynamics[T <: Descriptor](val D:T) {
 
 }
 
-class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+class NoDynamics(override val D:Descriptor) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
   
@@ -40,7 +42,7 @@ class NoDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
 
 }
 
-class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
+class BounceBack(override val D:Descriptor) extends Dynamics(D) {
   
   def apply( f: Array[Double] ) {  
     lazy val half = D.q/2
@@ -55,7 +57,7 @@ class BounceBack[T <: Descriptor](override val D:T) extends Dynamics(D) {
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
 }
 
-abstract class IncompressiBleDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
+abstract class IncompressiBleDynamics(override val D:Descriptor) extends Dynamics(D) {
 
   private lazy val myPopIndices = (1 until D.q).toList
 
@@ -84,7 +86,7 @@ abstract class IncompressiBleDynamics[T <: Descriptor](override val D:T) extends
 	}
 }
 
-class BGKdynamics[T <: Descriptor](override val D:T, var omega:Double) extends IncompressiBleDynamics(D) {
+class BGKdynamics(override val D:Descriptor, var omega:Double) extends IncompressiBleDynamics(D) {
   
   def fOne(iPop:Int,piNeq:Array[Double]) = {
     var fNeq = 0.5*D.t(iPop)*Doubles.sqr(D.invCs2)

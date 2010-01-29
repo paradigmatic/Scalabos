@@ -3,7 +3,7 @@ package lb
 import lb.dyn._
 import lb.util.Arrays._
 
-class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
+class Cell( var dyn: Dynamics ) {
 	private lazy val half = D.q/2
 	private lazy val oneToHalfRange = (1 to half).toList  
 	
@@ -15,8 +15,12 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
   
   def D() : Descriptor = dyn.D
   
-  def defineDynamics( dynamics:Dynamics[T] ) = {
+  def defineDynamics( dynamics:Dynamics ) = {
     dyn = dynamics
+  }
+  
+  def defineVelocity( u:Array[Double]) = {
+    dyn.defineVelocity(u)
   }
   
   def revert(): Unit = {
