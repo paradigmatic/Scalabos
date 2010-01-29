@@ -62,6 +62,7 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   }
 
   def select( region: Region ) = new ComplexSelection( this, region )
+  def select( region: Rectangle ) = new RectangularSelection( this, region )
   def selectAll = select(WholeDomain)
 
   override lazy val toString = "Lattice("+D+", sizeX="+nX+", sizeY="+nY+")"
