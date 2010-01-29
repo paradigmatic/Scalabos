@@ -9,7 +9,11 @@ object dynInterfaces {
   }
   
   def addVelocityBoundary(lattice:Lattice2D,domain:Region,bcDyn:DirichletVelocityDynamics) {
-    lattice.select(domain).foreach(C => { val baseDyn = C.dyn; bcDyn.defineBaseDynamics(baseDyn); C.defineDynamics(bcDyn)})
+    lattice.select(domain).foreach(C => {
+      val baseDyn = C.dyn
+      bcDyn.defineBaseDynamics(baseDyn)
+      C.defineDynamics(bcDyn.copy)
+    })
   }
 
 }
