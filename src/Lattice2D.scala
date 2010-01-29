@@ -4,8 +4,8 @@ import lb.dyn._
 import lb.select._
 import lb.util.Arrays._
 
-class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
-		 val defaultDynamics: Dynamics[T] )  {
+class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
+		 val defaultDynamics: Dynamics )  {
 
 
   private lazy val half = D.q/2
@@ -14,7 +14,7 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
   private lazy val fRange = (1 to half).toList  
 
   private val grid = {
-    val g = new Array[Array[Cell[T]]](nX,nY)
+    val g = new Array[Array[Cell]](nX,nY)
     for( iX <- xRange; iY <- yRange ) {
       g(iX)(iY) = new Cell(defaultDynamics)
     }
@@ -53,7 +53,7 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
 
   def collideAndStream() = { collide; stream }
 
-  def map[A]( f: Cell[T] => A ) = {
+  def map[A]( f: Cell => A ) = {
     val ary = new Array[Array[A]](nX,nY)
     for( iX <- xRange; iY <- yRange) {
       ary(iX)(iY) = f( grid(iX)(iY) )

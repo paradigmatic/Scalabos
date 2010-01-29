@@ -2,10 +2,10 @@ package lb.dyn
 
 import lb.util._
 
-abstract class CompositeDynamics[T <: Descriptor](override val D:T) extends Dynamics(D) {
-	var baseDyn:Dynamics[T] = new NoDynamics(D)
+abstract class CompositeDynamics(override val D:Descriptor) extends Dynamics(D) {
+	var baseDyn:Dynamics = new NoDynamics(D)
 	
-	def defineBaseDynamics(dyn:Dynamics[T]) = { baseDyn = dyn }
+	def defineBaseDynamics(dyn:Dynamics) = { baseDyn = dyn }
 	
 	def completePopulations(f:Array[Double]) : Unit
 	
@@ -17,7 +17,7 @@ abstract class CompositeDynamics[T <: Descriptor](override val D:T) extends Dyna
 
 
 
-abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
+abstract class DirichletVelocityDynamics(override val D:Descriptor, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
 
 	var uBC = new Array[Double](D.d)
 	
@@ -37,10 +37,9 @@ abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, val 
   def u( f: Array[Double], rho: Double ) = uBC
 }
 
-class RegularizedVelocityBoundaryCondition[T <: Descriptor]
-							 (override val D:T, 
-								override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
-                  
+class RegularizedVelocityBoundaryCondition (override val D:Descriptor, 
+					    override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
+  
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
   def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)
   

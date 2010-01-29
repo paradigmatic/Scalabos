@@ -4,11 +4,11 @@ import lb.select._
 
 object dynInterfaces {
   
-  def defineDynamics[T <: Descriptor](lattice:Lattice2D[T], domain:Region, dynamics:Dynamics[T]) {
+  def defineDynamics(lattice:Lattice2D, domain:Region, dynamics:Dynamics) {
     lattice.select(domain).foreach(_.defineDynamics(dynamics))
   }
   
-  def addVelocityBoundary[T <: Descriptor](lattice:Lattice2D[T],domain:Region,bcDyn:DirichletVelocityDynamics[T]) {
+  def addVelocityBoundary(lattice:Lattice2D,domain:Region,bcDyn:DirichletVelocityDynamics) {
     lattice.select(domain).foreach(C => { val baseDyn = C.dyn; bcDyn.defineBaseDynamics(baseDyn); C.defineDynamics(bcDyn)})
   }
 
