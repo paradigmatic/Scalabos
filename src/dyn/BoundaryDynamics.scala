@@ -17,14 +17,14 @@ abstract class CompositeDynamics[T <: Descriptor](override val D:T) extends Dyna
 
 
 
-abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:Array[Double], val dir:Int, val orient:Int) extends CompositeDynamics(D) {
+abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
 
-	var uBC = vel
+	var uBC = new Array[Double](D.d)
 	
 	lazy val onWallIndices = Indexes.subIndex(D,dir,0)
 	lazy val normalIndices = Indexes.subIndex(D,dir,orient)
 	
-	def defineU(vel:Array[Double]) = {uBC = vel}
+  override def defineVelocity(u:Array[Double]) = {uBC = u}
 
   def rho( f: Array[Double]) : Double = {
 		// rhoOnWall is the sum of f_i s that are perperdicular to the wall's normal
@@ -38,8 +38,8 @@ abstract class DirichletVelocityDynamics[T <: Descriptor](override val D:T, vel:
 }
 
 class RegularizedVelocityBoundaryCondition[T <: Descriptor]
-							 (override val D:T, vel:Array[Double], 
-								override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,vel,dir,orient) {
+							 (override val D:T, 
+								override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
                   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
   def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)

@@ -20,6 +20,14 @@ object SimSetup {
 				      ): (Int,Int,Cell[T]) => Unit = {
     equilibriumInitializion(D,fRho,fU)_ 
   }
+  
+  def velocityDefinition[T <: Descriptor](D:T,f: (Int,Int) => Array[Double])(iX:Int,iY:Int,cell:Cell[T]) {
+    cell.defineVelocity(f(iX,iY))
+  }
+  
+  def defineVelocity[T <: Descriptor](D:T,fU : (Int, Int) => Array[Double]): (Int,Int,Cell[T]) => Unit = {
+    velocityDefinition(D,fU)_ 
+  }
 }
 
 

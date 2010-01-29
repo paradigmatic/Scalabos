@@ -19,6 +19,10 @@ class Cell[T <: Descriptor]( var dyn: Dynamics[T] ) {
     dyn = dynamics
   }
   
+  def defineVelocity( u:Array[Double]) = {
+    dyn.defineVelocity(u)
+  }
+  
   def revert(): Unit = {
     for (iPop <- oneToHalfRange) { swap(iPop,iPop+half,f) }
   }

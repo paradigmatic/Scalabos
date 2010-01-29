@@ -6,6 +6,8 @@ abstract class Dynamics[T <: Descriptor](val D:T) {
   
   def apply( f: Array[Double] ): Unit
   
+  def defineVelocity(u:Array[Double]) {}
+  
   def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) : Double
   def fOne(iPop:Int,piNeq:Array[Double]) : Double
   
