@@ -22,7 +22,7 @@ abstract class DirichletVelocityDynamics(override val D:Descriptor, val dir:Int,
 	lazy val onWallIndices = Indexes.subIndex(D,dir,0)
 	lazy val normalIndices = Indexes.subIndex(D,dir,orient)
   
-  def copy() : DirichletVelocityDynamics[T]
+  def copy() : DirichletVelocityDynamics
 	
   override def defineVelocity(u:Array[Double]) = {uBC = u}
 
