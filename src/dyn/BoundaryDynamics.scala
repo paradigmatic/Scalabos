@@ -41,7 +41,9 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
 					    override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
            
   def copy() = {
-    new RegularizedVelocityBoundaryCondition(D, dir, orient)
+    val tmpDyn = new RegularizedVelocityBoundaryCondition(D, dir, orient)
+    tmpDyn.baseDyn = baseDyn
+    tmpDyn
   }
                   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
@@ -54,7 +56,7 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
 		val uSqr = Arrays.normSqr(uBC)
 
 		val fNeq = new Array[Double](D.q)
-		for (iPop <- onWallIndices) fNeq(iPop) = f(iPop) - baseDyn.equilibrium(iPop, density, uBC, uSqr)
+		for (iPop <- onWallIndices) fNeq(iPop) = f(iPop) - equilibrium(iPop, density, uBC, uSqr)
 				
 		for (iPop <- normalIndices) {
 				if (iPop == 0) fNeq(iPop) = 0
@@ -64,7 +66,7 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
 		val piNeq = new Array[Double](D.n)
 		for (iA <- 0 until D.d; iB <- iA until D.d ) {
 			for (iPop <- onWallIndices) piNeq(iPi) += D.c(iPop)(iA)*D.c(iPop)(iB)*fNeq(iPop)
-			for (iPop <- normalIndices) piNeq(iPi) += 2*D.c(iPop)(iA)*D.c(iPop)(iB)*fNeq(iPop)
+			for (iPop <- normalIndices) piNeq(iPi) += 2.0*D.c(iPop)(iA)*D.c(iPop)(iB)*fNeq(iPop)
 			iPi += 1
 		}
 		piNeq
@@ -75,6 +77,9 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
 		val vel = u(f,density)
 		val piNeq = deviatoricStress(f,density,vel)
     for (iPop <- D.popIndices) f(iPop) = regularize(iPop, density, vel, piNeq)
+			
+// 		val density1 = baseDyn.rho(f)
+// 		val vel1 = baseDyn.u(f,density1)
 	}
 
 }

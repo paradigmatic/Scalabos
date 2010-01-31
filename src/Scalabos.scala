@@ -62,7 +62,7 @@ object Hello {
       
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Arrays.normSqr(C.u) ) )
+        if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
         lattice.collideAndStream
       }

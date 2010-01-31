@@ -19,7 +19,7 @@ abstract class Dynamics(val D: Descriptor) {
   def regularize(rho:Double,u:Array[Double],piNeq:Array[Double]) : Array[Double] = {
     val uSqr = Arrays.normSqr(u)
     val f = new Array[Double](D.q)
-    for (iPop <- D.popIndices) f(iPop) = equilibrium(iPop,rho,u,uSqr)+fOne(iPop,piNeq)+fOne(iPop,piNeq)
+    for (iPop <- D.popIndices) f(iPop) = equilibrium(iPop,rho,u,uSqr)+fOne(iPop,piNeq)
     f
   }
   
@@ -39,6 +39,8 @@ class NoDynamics(override val D:Descriptor) extends Dynamics(D) {
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
+  
+  override lazy val toString = "No Dynamics"
 
 }
 
@@ -55,6 +57,8 @@ class BounceBack(override val D:Descriptor) extends Dynamics(D) {
   def rho( f: Array[Double]) = 1.0
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
+  
+  override lazy val toString = "BounceBack"
 }
 
 abstract class IncompressiBleDynamics(override val D:Descriptor) extends Dynamics(D) {
@@ -97,7 +101,7 @@ class BGKdynamics(override val D:Descriptor, var omega:Double) extends Incompres
         q_pi += D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
         q_pi -= D.cs2*piNeq(iPi)
       }
-      else q_pi += 2*D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
+      else q_pi += 2.0*D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
       iPi += 1
     }
                      
