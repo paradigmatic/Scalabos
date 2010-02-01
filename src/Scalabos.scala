@@ -21,6 +21,37 @@ object Timer {
 }
 
 object Hello {
+  
+  def iniGeometry(lattice:Lattice2D, units:UnitsConverter) {
+    //     val ini = new TaylorGreen2D(units,1,1)
+    val ini = new Poiseuille2D(units,0)
+    
+    val ww = Rectangle( 0,          0,          1,          units.nY-2 )
+    val ew = Rectangle( units.nX-1, units.nX-1, 1,          units.nY-2 )
+    val sw = Rectangle( 1,          units.nX-2, 0,          0 )
+    val nw = Rectangle( 1,          units.nX-2, units.nY-1, units.nY-1 )
+    
+    dynInterfaces.addVelocityBoundary(lattice,ww,new RegularizedVelocityBoundaryCondition(D2Q9, 0, -1))
+    dynInterfaces.addVelocityBoundary(lattice,ew,new RegularizedVelocityBoundaryCondition(D2Q9, 0, +1))
+    dynInterfaces.addVelocityBoundary(lattice,sw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, -1))
+    dynInterfaces.addVelocityBoundary(lattice,nw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, +1))
+    
+    val nwc = Rectangle( 0,          0,          units.nY-1, units.nY-1 )
+    val swc = Rectangle( 0,          0,          0,          0 )
+    val nec = Rectangle( units.nX-1, units.nX-1, units.nY-1, units.nY-1 )
+    val sec = Rectangle( units.nX-1, units.nX-1, 0,          0 )
+    
+    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nwc,-1,+1))
+    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,swc,-1,-1))
+    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nec,+1,+1))
+    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,sec,+1,-1))
+    
+    val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
+    lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
+    
+    val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
+    lattice.select(WholeDomain).foreach(applyInitialSetup)
+  }
 
   def main( args: Array[String] ) : Unit = {
     println("The first Scala lattice Boltzmann Solver (Scalabos) code EVER!!!")
@@ -29,7 +60,7 @@ object Hello {
     val physVel    = 1.0
     val lbVel      = 0.01
     val Re         = 1.0
-    val lx         = 1.0
+    val lx         = 1.5
     val ly         = 1.0
     
     val units = new UnitsConverter(D2Q9, Re, physVel,lbVel,physLength,lbLength,lx,ly)
@@ -37,20 +68,7 @@ object Hello {
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
 //    Image( lattice.map( _.rho ) ).display
     
-//     val ini = new TaylorGreen2D(units,1,1)
-    val ini = new Poiseuille2D(units,0)
-
-    dynInterfaces.addVelocityBoundary(lattice,WestWall,new RegularizedVelocityBoundaryCondition(D2Q9, 0, -1))
-    dynInterfaces.addVelocityBoundary(lattice,EastWall,new RegularizedVelocityBoundaryCondition(D2Q9, 0, +1))
-    
-    val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
-    lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
-
-    dynInterfaces.defineDynamics(lattice, NorthWall, new BounceBack(D2Q9))
-    dynInterfaces.defineDynamics(lattice, SouthWall, new BounceBack(D2Q9))
-
-    val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
-    lattice.select(WholeDomain).foreach(applyInitialSetup)
+    iniGeometry(lattice,units)
 //     Image( lattice.map( _.rho ) ).display
 //     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 

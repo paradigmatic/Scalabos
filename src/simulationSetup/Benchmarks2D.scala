@@ -3,7 +3,7 @@ package lb.simSetup
 import lb.units._
 import lb.util._
 
-class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val n:Int) {
+class TaylorGreen2D(val units:UnitsConverter, val m:Int, val n:Int) {
   
   def density(iX:Int, iY:Int) = {
     lazy val pi = 4.0 * Math.atan(1.0)
@@ -28,7 +28,7 @@ class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val
   } 
 }
 
-class Poiseuille2D[T <: Descriptor](val units:UnitsConverter[T], val dir:Int) {
+class Poiseuille2D(val units:UnitsConverter, val dir:Int) {
   def density(iX:Int, iY:Int) = {
     lazy val lx = units.nX-1
     lazy val ly = units.nY-1

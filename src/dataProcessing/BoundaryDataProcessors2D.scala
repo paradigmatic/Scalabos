@@ -3,9 +3,9 @@ package lb.dataProcessors2D
 import lb.select._
 import lb.util._
 
-class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,val xNormal:Int, val yNormal:Int) 
-    extends DataProcessor2D(lattice.D,lattice) {
-  def apply(iX:Int, iY:Int, cell:Cell) = {
+class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,domain:Region,val xNormal:Int, val yNormal:Int) 
+    extends DataProcessor2D(lattice.D,lattice,domain) {
+  def process(iX:Int, iY:Int, cell:Cell) : Unit = {
     
     val rho10 = lattice(iX-1*xNormal, iY-0*yNormal).rho
     val rho01 = lattice(iX-0*xNormal, iY-1*yNormal).rho
@@ -18,9 +18,9 @@ class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,val xNormal:Int, val 
     val u_y1 = cell_y1.u
     
     val dx_u = new Array[Double](D.d)
-    for (iD <- D.dimIndices) dx_u(iD) = -xNormal*(u_x1(iD)-u(iD))
+    for (iD <- D.dimIndices) dx_u(iD) = Fd.fwdDiff(u_x1(iD),u(iD),-xNormal)
     val dy_u = new Array[Double](D.d)
-    for (iD <- D.dimIndices) dy_u(iD) = -yNormal*(u_y1(iD)-u(iD))
+    for (iD <- D.dimIndices) dy_u(iD) = Fd.fwdDiff(u_y1(iD),u(iD),-yNormal)
     
     val dx_ux = dx_u(0)
     val dy_ux = dy_u(0)

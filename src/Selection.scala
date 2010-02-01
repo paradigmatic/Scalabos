@@ -78,7 +78,7 @@ case class Rectangle( val fromX: Int, val toX: Int,
   //TODO: check bounds
   def indices( lattice: Lattice2D ) = {
     val set = new HashSet[(Int,Int)]
-    for( x <- fromX until toX; y <- fromY until toY ) {
+    for( x <- fromX to toX; y <- fromY to toY ) {
       set + Tuple(x,y)
     }
     set.readOnly

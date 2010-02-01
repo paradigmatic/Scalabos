@@ -83,5 +83,5 @@ object Doubles {
 }
 
 object Fd {
-  def fwdDiff(u_1:Double,u:Double) = u_1 - u
+  def fwdDiff(u_1:Double,u:Double,orient:Int) = orient*(u_1 - u)
 }

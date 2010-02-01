@@ -3,15 +3,17 @@ package lb
 import lb.dyn._
 import lb.select._
 import lb.util.Arrays._
+import lb.dataProcessors2D._
 
 class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
 		 val defaultDynamics: Dynamics )  {
-
-
+  
   private lazy val half = D.q/2
   private lazy val xRange = (0 until nX).toList
   private lazy val yRange = (0 until nY).toList
   private lazy val fRange = (1 to half).toList  
+  
+  var dataProcessors = List[DataProcessor2D]()
 
   private val grid = {
     val g = new Array[Array[Cell]](nX,nY)
@@ -21,9 +23,6 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     g
   }
   
-//   val boundingBox = new Box2D(0,nX-1,0,nY-1)
-
-
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
@@ -51,7 +50,9 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     }
   }
 
-  def collideAndStream() = { collide; stream }
+  def collideAndStream() = { collide; stream; dataProcess }
+  
+  def dataProcess() = { dataProcessors.foreach( _.apply() ) }
 
   def map[A]( f: Cell => A ) = {
     val ary = new Array[Array[A]](nX,nY)
