@@ -67,10 +67,21 @@ object Indexes {
 		for (iPop <- 0 until subInd.length) subArray(iPop) = origArray(subInd(iPop))
 		subArray
 	}
+  
+  // Indices numerotation for tensors
+  object dim2 {
+    val xx = 0
+    val xy = 1
+    val yy = 2
+  }
 }
 
 object Doubles {
   def sqr( u:Double ) = {
     u * u
   }
+}
+
+object Fd {
+  def fwdDiff(u_1:Double,u:Double) = u_1 - u
 }

@@ -22,7 +22,8 @@ abstract class Dynamics(val D: Descriptor) {
   def rho( f: Array[Double]): Double
   def u( f: Array[Double], rho: Double ): Array[Double]
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double]) : Array[Double]
-
+  
+  def omega():Double
 }
 
 class NoDynamics(D:Descriptor) extends Dynamics(D) {
@@ -38,8 +39,9 @@ class NoDynamics(D:Descriptor) extends Dynamics(D) {
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
   
+  def omega() = 0.0
+  
   override lazy val toString = "No Dynamics"
-
 }
 
 class BounceBack(D:Descriptor) extends Dynamics(D) {
@@ -58,6 +60,8 @@ class BounceBack(D:Descriptor) extends Dynamics(D) {
   def u( f: Array[Double], rho: Double ) = new Array[Double](D.d)
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double])  = new Array[Double](D.n)
   
+  def omega() = 0.0
+  
   override lazy val toString = "BounceBack"
 }
 
@@ -73,24 +77,24 @@ abstract class IncompressiBleDynamics(D:Descriptor) extends Dynamics(D) {
   }
   
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double]) = {
-		var iPi = 0
-		val piNeq = new Array[Double](D.n)
-		for (iA <- D.dimIndices) { 
-			val iDiAg = iPi
-			for (iB <- iA until D.d) { 
-				for (iPop <- myPopIndices) {
-					piNeq(iPi) += D.c(iPop)(iA)*D.c(iPop)(iB)*f(iPop)
-				}
-				piNeq(iPi) -= rho*u(iA)*u(iB)
-				iPi += 1
-			}
-			piNeq(iDiAg) -= D.cs2 * rho
-		}
-		piNeq
-	}
+    var iPi = 0
+    val piNeq = new Array[Double](D.n)
+    for (iA <- D.dimIndices) { 
+      val iDiAg = iPi
+      for (iB <- iA until D.d) { 
+        for (iPop <- myPopIndices) {
+          piNeq(iPi) += D.c(iPop)(iA)*D.c(iPop)(iB)*f(iPop)
+        }
+        piNeq(iPi) -= rho*u(iA)*u(iB)
+        iPi += 1
+      }
+      piNeq(iDiAg) -= D.cs2 * rho
+    }
+    piNeq
+  }
 }
 
-class BGKdynamics(D:Descriptor, var omega:Double) extends IncompressiBleDynamics(D) {
+class BGKdynamics(D:Descriptor, om:Double) extends IncompressiBleDynamics(D) {
   
   def copy() = new BGKdynamics(D, omega)
   
@@ -117,6 +121,8 @@ class BGKdynamics(D:Descriptor, var omega:Double) extends IncompressiBleDynamics
     
     D.t(iPop)*rho*(1.0 + c_u + 0.5 * (c_u*c_u - D.invCs2*uSqr ))
   }
+  
+  def omega() = om
   
   def apply( f: Array[Double] ) = {
     val dens:Double = rho(f)

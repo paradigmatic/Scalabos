@@ -3,6 +3,10 @@ package lb.dataProcessors2D
 import lb.select._
 import lb.util._
 
+abstract class DataProcessor2D(val D:Descriptor,val lattice:Lattice2D) {
+  def apply(iX:Int,iY:Int,cell:Cell) : Unit
+}
+
 object Averages {
   
   def density(lattice:Lattice2D, domain:Region) : Double  = {
@@ -24,9 +28,5 @@ object Averages {
     totEnergy
   }
   
-}
-
-abstract class DataProcessor2D(val lattice:Lattice2D) {
-  def apply() : Unit
 }
 

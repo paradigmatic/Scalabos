@@ -8,6 +8,8 @@ abstract class CompositeDynamics(D:Descriptor) extends Dynamics(D) {
 	def defineBaseDynamics(dyn:Dynamics) = { baseDyn = dyn }
 	
 	def completePopulations(f:Array[Double]) : Unit
+  
+  def omega() = baseDyn.omega
 	
 	override def apply(f:Array[Double]) = {
 		completePopulations(f)
