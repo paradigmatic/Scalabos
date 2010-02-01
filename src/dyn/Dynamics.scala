@@ -4,23 +4,19 @@ import lb.util._
 
 abstract class Dynamics(val D: Descriptor) {
   
-  def apply( f: Array[Double] ): Unit
+  def apply( f: Array[Double] ): Unit // The apply methods does the collision
   
-  def defineVelocity(u:Array[Double]) {}
+  def copy() : Dynamics // The returns a new instance of the class
+  
+  def defineVelocity(u:Array[Double]) : Unit = {}
   
   def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) : Double
-  def fOne(iPop:Int,piNeq:Array[Double]) : Double
+  def fOne(iPop:Int,piNeq:Array[Double]) : Double // The off-equilibrium contribution to the distribution function
   
   def regularize(iPop:Int,rho:Double,u:Array[Double],piNeq:Array[Double]) : Double = {
     val uSqr = Arrays.normSqr(u)
+    // f = feq+fone
     equilibrium(iPop,rho,u,uSqr)+fOne(iPop,piNeq)
-  }
-  
-  def regularize(rho:Double,u:Array[Double],piNeq:Array[Double]) : Array[Double] = {
-    val uSqr = Arrays.normSqr(u)
-    val f = new Array[Double](D.q)
-    for (iPop <- D.popIndices) f(iPop) = equilibrium(iPop,rho,u,uSqr)+fOne(iPop,piNeq)
-    f
   }
   
   def rho( f: Array[Double]): Double
@@ -29,9 +25,11 @@ abstract class Dynamics(val D: Descriptor) {
 
 }
 
-class NoDynamics(override val D:Descriptor) extends Dynamics(D) {
+class NoDynamics(D:Descriptor) extends Dynamics(D) {
 
   def apply( f: Array[Double] ) {}
+  
+  def copy() = new NoDynamics(D)
   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) = D.t(iPop)
   def fOne(iPop:Int,piNeq:Array[Double]) = 0.0
@@ -44,12 +42,14 @@ class NoDynamics(override val D:Descriptor) extends Dynamics(D) {
 
 }
 
-class BounceBack(override val D:Descriptor) extends Dynamics(D) {
+class BounceBack(D:Descriptor) extends Dynamics(D) {
   
   def apply( f: Array[Double] ) {  
     lazy val half = D.q/2
     for (iPop <- 1 until half+1) Arrays.swap(iPop,iPop+half,f)
   }
+  
+  def copy() = new BounceBack(D)
   
   def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double) = D.t(iPop)
   def fOne(iPop:Int,piNeq:Array[Double]) = 0.0
@@ -61,7 +61,7 @@ class BounceBack(override val D:Descriptor) extends Dynamics(D) {
   override lazy val toString = "BounceBack"
 }
 
-abstract class IncompressiBleDynamics(override val D:Descriptor) extends Dynamics(D) {
+abstract class IncompressiBleDynamics(D:Descriptor) extends Dynamics(D) {
 
   private lazy val myPopIndices = (1 until D.q).toList
 
@@ -90,7 +90,9 @@ abstract class IncompressiBleDynamics(override val D:Descriptor) extends Dynamic
 	}
 }
 
-class BGKdynamics(override val D:Descriptor, var omega:Double) extends IncompressiBleDynamics(D) {
+class BGKdynamics(D:Descriptor, var omega:Double) extends IncompressiBleDynamics(D) {
+  
+  def copy() = new BGKdynamics(D, omega)
   
   def fOne(iPop:Int,piNeq:Array[Double]) = {
     var fNeq = 0.5*D.t(iPop)*Doubles.sqr(D.invCs2)

@@ -2,7 +2,7 @@ package lb.dyn
 
 import lb.util._
 
-abstract class CompositeDynamics(override val D:Descriptor) extends Dynamics(D) {
+abstract class CompositeDynamics(D:Descriptor) extends Dynamics(D) {
 	var baseDyn:Dynamics = new NoDynamics(D)
 	
 	def defineBaseDynamics(dyn:Dynamics) = { baseDyn = dyn }
@@ -15,14 +15,12 @@ abstract class CompositeDynamics(override val D:Descriptor) extends Dynamics(D) 
 	}
 }
 
-abstract class DirichletVelocityDynamics(override val D:Descriptor, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
+abstract class DirichletVelocityDynamics(D:Descriptor, val dir:Int, val orient:Int) extends CompositeDynamics(D) {
 
 	var uBC = new Array[Double](D.d)
 	
 	lazy val onWallIndices = Indexes.subIndex(D,dir,0)
 	lazy val normalIndices = Indexes.subIndex(D,dir,orient)
-  
-  def copy() : DirichletVelocityDynamics
 	
   override def defineVelocity(u:Array[Double]) = {uBC = u}
 
@@ -37,8 +35,8 @@ abstract class DirichletVelocityDynamics(override val D:Descriptor, val dir:Int,
   def u( f: Array[Double], rho: Double ) = uBC
 }
 
-class RegularizedVelocityBoundaryCondition (override val D:Descriptor, 
-					    override val dir:Int, override val orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
+class RegularizedVelocityBoundaryCondition (D:Descriptor, 
+					    dir:Int, orient:Int) extends DirichletVelocityDynamics(D,dir,orient) {
            
   def copy() = {
     val tmpDyn = new RegularizedVelocityBoundaryCondition(D, dir, orient)
@@ -50,7 +48,6 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
   def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)
   
   override def regularize(iPop:Int,rho:Double, u:Array[Double], piNeq:Array[Double]) : Double = baseDyn.regularize(iPop,rho,u,piNeq)
-  override def regularize(rho:Double, u:Array[Double], piNeq:Array[Double]) : Array[Double] = baseDyn.regularize(rho,u,piNeq)
 									
 	def deviatoricStress(f:Array[Double], density:Double, vel:Array[Double]) : Array[Double] = {
 		val uSqr = Arrays.normSqr(uBC)
@@ -77,9 +74,8 @@ class RegularizedVelocityBoundaryCondition (override val D:Descriptor,
 		val vel = u(f,density)
 		val piNeq = deviatoricStress(f,density,vel)
     for (iPop <- D.popIndices) f(iPop) = regularize(iPop, density, vel, piNeq)
-			
-// 		val density1 = baseDyn.rho(f)
-// 		val vel1 = baseDyn.u(f,density1)
 	}
+  
+  override lazy val toString = "RegularizedVelocityBC("+D+", baseDyn="+baseDyn.toString+")"
 
 }

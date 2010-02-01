@@ -13,6 +13,11 @@ class Cell( var dyn: Dynamics ) {
 
   def collide() = dyn(f)
   
+  def copy() = {
+    val cell = new Cell(dyn)
+    cell.f = f
+  }
+  
   def D() : Descriptor = dyn.D
   
   def defineDynamics( dynamics:Dynamics ) = {

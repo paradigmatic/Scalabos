@@ -26,3 +26,7 @@ object Averages {
   
 }
 
+abstract class DataProcessor2D(val lattice:Lattice2D) {
+  def apply() : Unit
+}
+

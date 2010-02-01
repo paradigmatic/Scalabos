@@ -109,7 +109,7 @@ case object WholeDomain extends Region {
 }
 
 abstract class Selection[R <: Region]( val lattice: Lattice2D, val region: R )
-extends Iterable[Cell] {
+    extends Iterable[Cell] {
  
  lazy val indices = region.indices( lattice )
 
@@ -138,9 +138,9 @@ class ComplexSelection[R <: Region]( lattice: Lattice2D, region: R )
 extends Selection[R](lattice, region )
 
 class RectangularSelection( lattice: Lattice2D, rect: Rectangle )
-extends Selection[Rectangle]( lattice, rect ) {
+    extends Selection[Rectangle]( lattice, rect ) {
 
-  def apply( x: Int, y: Int ) = lattice( x + rect.fromX, y + rect.fromX )
+  def apply( x: Int, y: Int ) = lattice( x + rect.fromX, y + rect.fromY )
 
 }
 
