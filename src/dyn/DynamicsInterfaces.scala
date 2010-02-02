@@ -1,6 +1,7 @@
 package lb.dyn
 
 import lb.select._
+import lb.dataProcessors2D._
 
 object dynInterfaces {
   
@@ -13,6 +14,12 @@ object dynInterfaces {
       val baseDyn = C.dyn
       bcDyn.defineBaseDynamics(baseDyn)
       C.defineDynamics(bcDyn.copy)} )
+  }
+  
+  def addExternalVelocityCornerBoundary(lattice:Lattice2D,domain:Region,xNormal:Int,yNormal:Int) {
+    defineDynamics(lattice,domain,new ImposedDensityAndVelocityDynamics(lattice.D))
+    val dataProc = new CornerBoundaryConditionProcessor2D(lattice,domain,xNormal,yNormal)
+    dataProcessorsInterfaces.addDataProcessor(lattice,dataProc)
   }
 
 }

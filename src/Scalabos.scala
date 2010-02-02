@@ -41,10 +41,11 @@ object Hello {
     val nec = Rectangle( units.nX-1, units.nX-1, units.nY-1, units.nY-1 )
     val sec = Rectangle( units.nX-1, units.nX-1, 0,          0 )
     
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nwc,-1,+1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,swc,-1,-1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nec,+1,+1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,sec,+1,-1))
+    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nwc,-1,+1)
+    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nwc,-1,+1)
+    dynInterfaces.addExternalVelocityCornerBoundary(lattice,swc,-1,-1)
+    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nec,+1,+1)
+    dynInterfaces.addExternalVelocityCornerBoundary(lattice,sec,+1,-1)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
