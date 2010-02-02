@@ -72,15 +72,15 @@ object Hello {
 //     Image( lattice.map( _.rho ) ).display
 //     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 100
+    val maxT = 1000
     val logT = 1
 
-//     for( o <- 0 until 10 ) {
+     for( o <- 0 until 10 ) {
       val begin = Timer.go  
       
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
+        //if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
         lattice.collideAndStream
       }
@@ -96,7 +96,7 @@ object Hello {
       println("Total Time = " + (end-begin)/1000.0 )
       System.gc
       System.gc
-//     }
+     }
   }
   //Image( lattice.map( _.rho ) ).display
 }

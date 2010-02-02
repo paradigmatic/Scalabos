@@ -24,21 +24,34 @@ object Arrays {
     f(j) = tmp
   }
   
+  private def genDot(u:Array[Double], v:Array[Double]) : Double = {
+		// scalar product TODO : check size
+    var res:Double = u(0)*v(0)
+    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
+    res
+  }
+
   def dot(u:Array[Double], v:Array[Double]) : Double = {
+    if( u.length == 2 ) u(0)*v(0) + u(1)*v(1)
+    else genDot(u,v)
+  }
+
+  private def genDot(u:Array[Int], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
     for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
     res
   }
-  
+
   def dot(u:Array[Int], v:Array[Double]) : Double = {
-		// scalar product TODO : check size
-    var res:Double = u(0)*v(0)
-    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
-    res
+    if( u.length == 2 ) u(0)*v(0) + u(1)*v(1)
+    else genDot(u,v)
   }
-  
-  def normSqr(u:Array[Double]) : Double = { dot(u,u) } // norm squared
+
+  def normSqr(u:Array[Double]) : Double = { 
+    if( u.length == 2 ) u(0)*u(0) + u(1)*u(1)
+    else dot(u,u) 
+  } // norm squared
   
   def norm(u:Array[Double]) : Double = { sqrt(normSqr(u)) } // norm
   
