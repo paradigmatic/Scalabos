@@ -8,6 +8,7 @@ abstract class Dynamics(val D: Descriptor) {
   
   def copy() : Dynamics // The returns a new instance of the class
   
+  def defineDensity(rho:Double) :Unit = {}
   def defineVelocity(u:Array[Double]) : Unit = {}
   
   def equilibrium(iPop:Int,rho:Double,u:Array[Double],uSqr:Double) : Double

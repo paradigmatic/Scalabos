@@ -4,8 +4,9 @@ import lb.select._
 import lb.util._
 
 class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,domain:Region,val xNormal:Int, val yNormal:Int) 
-    extends DataProcessor2D(lattice.D,lattice,domain) {
+    extends DataProcessor2D(lattice,domain) {
   def process(iX:Int, iY:Int, cell:Cell) : Unit = {
+    val D = lattice.D
     
     val rho10 = lattice(iX-1*xNormal, iY-0*yNormal).rho
     val rho01 = lattice(iX-0*xNormal, iY-1*yNormal).rho

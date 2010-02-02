@@ -3,7 +3,7 @@ package lb.dataProcessors2D
 import lb.select._
 import lb.util._
 
-abstract class DataProcessor2D(val D:Descriptor,val lattice:Lattice2D, val domain:Region) {
+abstract class DataProcessor2D(val lattice:Lattice2D, val domain:Region) {
   def apply() = { lattice.select(domain).foreach( (iX,iY,C) => process(iX,iY,C) ) }
   def process(iX:Int,iY:Int,cell:Cell) : Unit
 }
