@@ -26,31 +26,13 @@ object Hello {
     //     val ini = new TaylorGreen2D(units,1,1)
     val ini = new Poiseuille2D(units,0)
     
-    val ww = Rectangle( 0,          0,          1,          units.nY-2 )
-    val ew = Rectangle( units.nX-1, units.nX-1, 1,          units.nY-2 )
-    val sw = Rectangle( 1,          units.nX-2, 0,          0 )
-    val nw = Rectangle( 1,          units.nX-2, units.nY-1, units.nY-1 )
-    
-    dynInterfaces.addVelocityBoundary(lattice,ww,new RegularizedVelocityBoundaryCondition(D2Q9, 0, -1))
-    dynInterfaces.addVelocityBoundary(lattice,ew,new RegularizedVelocityBoundaryCondition(D2Q9, 0, +1))
-    dynInterfaces.addVelocityBoundary(lattice,sw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, -1))
-    dynInterfaces.addVelocityBoundary(lattice,nw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, +1))
-    
-    val nwc = Rectangle( 0,          0,          units.nY-1, units.nY-1 )
-    val swc = Rectangle( 0,          0,          0,          0 )
-    val nec = Rectangle( units.nX-1, units.nX-1, units.nY-1, units.nY-1 )
-    val sec = Rectangle( units.nX-1, units.nX-1, 0,          0 )
-    
-    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nwc,-1,+1)
-    dynInterfaces.addExternalVelocityCornerBoundary(lattice,swc,-1,-1)
-    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nec,+1,+1)
-    dynInterfaces.addExternalVelocityCornerBoundary(lattice,sec,+1,-1)
+    dynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
     
-//     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
-//     lattice.select(WholeDomain).foreach(applyInitialSetup)
+    val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
+    lattice.select(WholeDomain).foreach(applyInitialSetup)
   }
 
   def main( args: Array[String] ) : Unit = {
@@ -72,8 +54,8 @@ object Hello {
 //     Image( lattice.map( _.rho ) ).display
 //     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 100
-    val logT = 1
+    val maxT = 10000
+    val logT = 100
     val poiseuille = new Poiseuille2D(units,0)
 
 //     for( o <- 0 until 10 ) {
@@ -84,7 +66,7 @@ object Hello {
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
         if (iT % logT == 0) {
 //           Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
-          println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity))
+          println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
         }
 
         lattice.collideAndStream
