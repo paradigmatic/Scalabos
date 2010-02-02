@@ -42,7 +42,6 @@ object Hello {
     val sec = Rectangle( units.nX-1, units.nX-1, 0,          0 )
     
     dynInterfaces.addExternalVelocityCornerBoundary(lattice,nwc,-1,+1)
-    dynInterfaces.addExternalVelocityCornerBoundary(lattice,nwc,-1,+1)
     dynInterfaces.addExternalVelocityCornerBoundary(lattice,swc,-1,-1)
     dynInterfaces.addExternalVelocityCornerBoundary(lattice,nec,+1,+1)
     dynInterfaces.addExternalVelocityCornerBoundary(lattice,sec,+1,-1)
@@ -50,8 +49,8 @@ object Hello {
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
     
-    val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
-    lattice.select(WholeDomain).foreach(applyInitialSetup)
+//     val applyInitialSetup = SimSetup.iniAtEquilibrium(D2Q9,ini.density,ini.velocity)
+//     lattice.select(WholeDomain).foreach(applyInitialSetup)
   }
 
   def main( args: Array[String] ) : Unit = {
@@ -75,14 +74,19 @@ object Hello {
 
     val maxT = 100
     val logT = 1
+    val poiseuille = new Poiseuille2D(units,0)
 
 //     for( o <- 0 until 10 ) {
       val begin = Timer.go  
       
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
+        if (iT % logT == 0) {
+//           Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
+          println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity))
+        }
+
         lattice.collideAndStream
       }
       

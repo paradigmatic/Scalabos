@@ -24,6 +24,12 @@ object Arrays {
     f(j) = tmp
   }
   
+  def diff(u:Array[Double],v:Array[Double]) : Array[Double] = {
+    val res = new Array[Double](u.length)
+    for (iD <- 0 until u.length) res(iD) = u(iD) - v(iD)
+    res
+  }
+  
   def dot(u:Array[Double], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
