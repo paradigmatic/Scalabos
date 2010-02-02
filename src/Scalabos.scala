@@ -54,9 +54,10 @@ object Hello {
 //     Image( lattice.map( _.rho ) ).display
 //     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 10000
+    val maxT = 100000
     val logT = 100
     val poiseuille = new Poiseuille2D(units,0)
+    val converge = new Convergence(1000,1.0e-5)
 
 //     for( o <- 0 until 10 ) {
       val begin = Timer.go  
@@ -64,10 +65,12 @@ object Hello {
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
-        if (iT % logT == 0) {
+//         if (iT % logT == 0) {
 //           Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
-          println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
-        }
+//           println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
+          
+//         }
+        converge(Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
 
         lattice.collideAndStream
       }
