@@ -24,7 +24,17 @@ object Arrays {
     f(j) = tmp
   }
   
+<<<<<<< HEAD:src/Utils.scala
   private def genDot(u:Array[Double], v:Array[Double]) : Double = {
+=======
+  def diff(u:Array[Double],v:Array[Double]) : Array[Double] = {
+    val res = new Array[Double](u.length)
+    for (iD <- 0 until u.length) res(iD) = u(iD) - v(iD)
+    res
+  }
+  
+  def dot(u:Array[Double], v:Array[Double]) : Double = {
+>>>>>>> master:src/Utils.scala
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
     for( iD <- 1 until u.length) { res += u(iD)*v(iD) }

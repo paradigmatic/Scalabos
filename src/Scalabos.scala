@@ -26,25 +26,7 @@ object Hello {
     //     val ini = new TaylorGreen2D(units,1,1)
     val ini = new Poiseuille2D(units,0)
     
-    val ww = Rectangle( 0,          0,          1,          units.nY-2 )
-    val ew = Rectangle( units.nX-1, units.nX-1, 1,          units.nY-2 )
-    val sw = Rectangle( 1,          units.nX-2, 0,          0 )
-    val nw = Rectangle( 1,          units.nX-2, units.nY-1, units.nY-1 )
-    
-    dynInterfaces.addVelocityBoundary(lattice,ww,new RegularizedVelocityBoundaryCondition(D2Q9, 0, -1))
-    dynInterfaces.addVelocityBoundary(lattice,ew,new RegularizedVelocityBoundaryCondition(D2Q9, 0, +1))
-    dynInterfaces.addVelocityBoundary(lattice,sw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, -1))
-    dynInterfaces.addVelocityBoundary(lattice,nw,new RegularizedVelocityBoundaryCondition(D2Q9, 1, +1))
-    
-    val nwc = Rectangle( 0,          0,          units.nY-1, units.nY-1 )
-    val swc = Rectangle( 0,          0,          0,          0 )
-    val nec = Rectangle( units.nX-1, units.nX-1, units.nY-1, units.nY-1 )
-    val sec = Rectangle( units.nX-1, units.nX-1, 0,          0 )
-    
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nwc,-1,+1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,swc,-1,-1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,nec,+1,+1))
-    dataProcessorsInterfaces.addDataProcessor(lattice,new CornerBoundaryConditionProcessor2D(lattice,sec,+1,-1))
+    dynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
@@ -72,16 +54,25 @@ object Hello {
 //     Image( lattice.map( _.rho ) ).display
 //     Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 1000
-    val logT = 1
+
+    val maxT = 100000
+    val logT = 100
+    val poiseuille = new Poiseuille2D(units,0)
+    val converge = new Convergence(1000,1.0e-5)
 
      for( o <- 0 until 10 ) {
       val begin = Timer.go  
       
       for (iT <- 0 until maxT) { 
 //         if (iT % logT == 0) println("This iteration is for you baby "+iT)
-        //if (iT % logT == 0) Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
 //         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
+//         if (iT % logT == 0) {
+//           Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
+//           println("L2-average error = "+Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
+          
+//         }
+        converge(Averages.velocityL2Error(lattice, poiseuille.velocity)/units.lbVel)
+
         lattice.collideAndStream
       }
       

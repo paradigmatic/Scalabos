@@ -61,6 +61,14 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     }
     ary
   }
+  
+  def map[A]( f: (Int,Int,Cell) => A ) = {
+    val ary = new Array[Array[A]](nX,nY)
+    for( iX <- xRange; iY <- yRange) {
+      ary(iX)(iY) = f(iX,iY,grid(iX)(iY))
+    }
+    ary
+  }
 
   def select( region: Region ) = new ComplexSelection( this, region )
   def select( region: Rectangle ) = new RectangularSelection( this, region )
