@@ -3,27 +3,26 @@ package lb
 import lb.dyn._
 import lb.select._
 import lb.util.Arrays._
+import lb.dataProcessors2D._
 
-class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
-		 val defaultDynamics: Dynamics[T] )  {
-
-
+class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
+		 val defaultDynamics: Dynamics )  {
+  
   private lazy val half = D.q/2
   private lazy val xRange = (0 until nX).toList
   private lazy val yRange = (0 until nY).toList
   private lazy val fRange = (1 to half).toList  
+  
+  var dataProcessors = List[DataProcessor2D]()
 
   private val grid = {
-    val g = new Array[Array[Cell[T]]](nX,nY)
+    val g = new Array[Array[Cell]](nX,nY)
     for( iX <- xRange; iY <- yRange ) {
       g(iX)(iY) = new Cell(defaultDynamics)
     }
     g
   }
   
-//   val boundingBox = new Box2D(0,nX-1,0,nY-1)
-
-
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
@@ -51,17 +50,28 @@ class Lattice2D[T <: Descriptor]( val D:T, val nX: Int, val nY: Int,
     }
   }
 
-  def collideAndStream() = { collide; stream }
+  def collideAndStream() = { collide; stream; dataProcess }
+  
+  def dataProcess() = { dataProcessors.foreach( _.apply() ) }
 
-  def map[A]( f: Cell[T] => A ) = {
+  def map[A]( f: Cell => A ) = {
     val ary = new Array[Array[A]](nX,nY)
     for( iX <- xRange; iY <- yRange) {
       ary(iX)(iY) = f( grid(iX)(iY) )
     }
     ary
   }
+  
+  def map[A]( f: (Int,Int,Cell) => A ) = {
+    val ary = new Array[Array[A]](nX,nY)
+    for( iX <- xRange; iY <- yRange) {
+      ary(iX)(iY) = f(iX,iY,grid(iX)(iY))
+    }
+    ary
+  }
 
-  def select( region: Region ) = new Selection( this, region )
+  def select( region: Region ) = new ComplexSelection( this, region )
+  def select( region: Rectangle ) = new RectangularSelection( this, region )
   def selectAll = select(WholeDomain)
 
   override lazy val toString = "Lattice("+D+", sizeX="+nX+", sizeY="+nY+")"

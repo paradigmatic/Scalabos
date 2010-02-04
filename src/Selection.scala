@@ -5,7 +5,7 @@ import scala.collection.mutable.HashSet
 import scala.collection.Set
 
 trait Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D] ): Set[(Int,Int)]
+  def indices( lattice: Lattice2D ): Set[(Int,Int)]
   def and( other: Region ):Region = MultiRegion( this, other )
   def &( other: Region )  = and( other )
 }
@@ -14,7 +14,7 @@ case class MultiRegion( r1: Region, r2: Region ) extends Region {
 
   private var regions = List( r1, r2  )
   
-  def indices[D <: Descriptor]( lattice: Lattice2D[D] ) =  {
+  def indices( lattice: Lattice2D ) =  {
     val set = new HashSet[(Int,Int)]
     regions.foreach( set ++ _.indices(lattice) )
     set.readOnly
@@ -30,7 +30,7 @@ case class MultiRegion( r1: Region, r2: Region ) extends Region {
 //TODO: decide convention about y direction
 
 case object NorthWall  extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D]) = {
+  def indices( lattice: Lattice2D) = {
     val set = new HashSet[(Int,Int)]
     val y = lattice.nY - 1
     for( x <- 0 until lattice.nX ) {
@@ -41,7 +41,7 @@ case object NorthWall  extends Region {
 }
 
 case object SouthWall  extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D] ) = {
+  def indices( lattice: Lattice2D ) = {
     val set = new HashSet[(Int,Int)]
     val y = 0
     for( x <- 0 until lattice.nX ) {
@@ -52,7 +52,7 @@ case object SouthWall  extends Region {
 }
 
 case object WestWall extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D]) = {
+  def indices( lattice: Lattice2D) = {
     val set = new HashSet[(Int,Int)]
     val x = 0
     for( y <- 0 until lattice.nY ) {
@@ -63,7 +63,7 @@ case object WestWall extends Region {
 }
 
 case object EastWall extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D]) = {
+  def indices( lattice: Lattice2D) = {
     val set = new HashSet[(Int,Int)]
     val x = lattice.nX - 1
     for( y <- 0 until lattice.nY )  {
@@ -76,9 +76,9 @@ case object EastWall extends Region {
 case class Rectangle( val fromX: Int, val toX: Int,
                       val fromY: Int, val toY: Int) extends Region {
   //TODO: check bounds
-  def indices[D <: Descriptor]( lattice: Lattice2D[D] ) = {
+  def indices( lattice: Lattice2D ) = {
     val set = new HashSet[(Int,Int)]
-    for( x <- fromX until toX; y <- fromY until toY ) {
+    for( x <- fromX to toX; y <- fromY to toY ) {
       set + Tuple(x,y)
     }
     set.readOnly
@@ -86,7 +86,7 @@ case class Rectangle( val fromX: Int, val toX: Int,
 }
 
 case class Where( val predicate: (Int,Int) => Boolean ) extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D]  ) = {
+  def indices( lattice: Lattice2D ) = {
     val set = new HashSet[(Int,Int)]
     for( x <- 0 until lattice.nX; 
          y <- 0 until lattice.nY if predicate(x,y) ) {
@@ -97,7 +97,7 @@ case class Where( val predicate: (Int,Int) => Boolean ) extends Region {
 }
 
 case object WholeDomain extends Region {
-  def indices[D <: Descriptor]( lattice: Lattice2D[D] ) = {
+  def indices( lattice: Lattice2D ) = {
     val set = new HashSet[(Int,Int)]
     for( x <- 0 until lattice.nX;   
          y <- 0 until lattice.nY  ) {
@@ -108,31 +108,39 @@ case object WholeDomain extends Region {
   override def and( other: Region ) = this
 }
 
+abstract class Selection[R <: Region]( val lattice: Lattice2D, val region: R )
+    extends Iterable[Cell] {
+ 
+ lazy val indices = region.indices( lattice )
 
-class Selection[D <: Descriptor]( lattice: Lattice2D[D], regions: Region ) extends Iterable[Cell[D]]{
-  
-  lazy val indices = regions.indices( lattice )
-
-  override def foreach( f: (Cell[D]) => Unit ) {
-    indices.foreach { 
-      ind =>
-        f( lattice( ind._1, ind._2 ) )
-    }
-  }
-
-
- def foreach( f: (Int, Int, Cell[D]) => Unit ) {
+  def foreach( f: (Int, Int, Cell) => Unit ) {
     indices.foreach { 
       ind =>
         f( ind._1, ind._2, lattice( ind._1, ind._2 ) )
     }
   }
 
+  override def foreach( f: (Cell) => Unit ) {
+    indices.foreach { 
+      ind =>
+        f( lattice( ind._1, ind._2 ) )
+    }
+  }
+
   lazy val elements = {
-    var lst = List[Cell[D]]()
+    var lst = List[Cell]()
     foreach( lst ::= _ )
     lst.elements
   }
-  
+}
+
+class ComplexSelection[R <: Region]( lattice: Lattice2D, region: R )  
+extends Selection[R](lattice, region )
+
+class RectangularSelection( lattice: Lattice2D, rect: Rectangle )
+    extends Selection[Rectangle]( lattice, rect ) {
+
+  def apply( x: Int, y: Int ) = lattice( x + rect.fromX, y + rect.fromY )
+
 }
 

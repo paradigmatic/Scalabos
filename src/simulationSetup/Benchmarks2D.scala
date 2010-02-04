@@ -3,7 +3,29 @@ package lb.simSetup
 import lb.units._
 import lb.util._
 
-class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val n:Int) {
+class Convergence(val minLength:Int, val epsilon:Double) {
+	private var values = List[Double]()
+	private var iter = 0
+	
+	private var mean = 0.0
+	private var stdDev = 0.0
+	
+	def apply(value:Double) = { 
+		values = value :: values 
+		iter += 1
+		if (values.length > minLength) {
+			values = values.init
+			val mean = Math.abs(values.reduceLeft(_+_)/values.length)
+			val stdDev = Math.sqrt(values.map( x => Doubles.sqr(x-mean) ).reduceLeft(_+_))/values.length
+			if (iter % minLength == 0) println("Avg = "+mean+", std dev = "+stdDev+", std dev / avg = "+stdDev/mean)
+			if (stdDev / mean < epsilon) true
+			else false
+		}
+		else false
+	}
+}
+
+class TaylorGreen2D(val units:UnitsConverter, val m:Int, val n:Int) {
   
   def density(iX:Int, iY:Int) = {
     lazy val pi = 4.0 * Math.atan(1.0)
@@ -28,7 +50,7 @@ class TaylorGreen2D[T <: Descriptor](val units:UnitsConverter[T], val m:Int, val
   } 
 }
 
-class Poiseuille2D[T <: Descriptor](val units:UnitsConverter[T], val dir:Int) {
+class Poiseuille2D(val units:UnitsConverter, val dir:Int) {
   def density(iX:Int, iY:Int) = {
     lazy val lx = units.nX-1
     lazy val ly = units.nY-1
