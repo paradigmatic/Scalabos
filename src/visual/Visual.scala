@@ -75,8 +75,8 @@ class Image( private val matrix: Array[Array[Double]] ) {
     renderer setBlockHeight 1.0
     renderer setBlockWidth 1.0
     val plot = new XYPlot(dataset, xAxis, yAxis, renderer )
-    plot.setDomainAxis(0,null)
-    plot.setRangeAxis(0,null)
+//     plot.setDomainAxis(0,null)
+//     plot.setRangeAxis(0,null)
     plot
   }
 
