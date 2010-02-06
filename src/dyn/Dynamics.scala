@@ -72,6 +72,7 @@ abstract class IncompressiBleDynamics(D:Descriptor) extends Dynamics(D) {
 
   def rho( f: Array[Double]): Double =  f.reduceLeft(_+_)
   def u( f: Array[Double], rho: Double ) = {
+//       lbHelpers.computeU(D,f,rho)
     val vel = new Array[Double](D.d)
     for( iPop <- myPopIndices; iD <- D.dimIndices) vel(iD) += D.c(iPop)(iD)*f(iPop)
     vel.map(_ / rho)
@@ -128,6 +129,9 @@ class BGKdynamics(D:Descriptor, om:Double) extends IncompressiBleDynamics(D) {
   def apply( f: Array[Double] ) = {
     val dens:Double = rho(f)
     val vel:Array[Double] = u(f,dens)
+    
+//     lbHelpers.bgkCollision(D,f,dens,vel,omega)
+    
     val velSqr = Arrays.normSqr(vel)
     
     for (iPop <- D.popIndices) { 

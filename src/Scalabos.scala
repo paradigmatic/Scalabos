@@ -56,23 +56,16 @@ object Hello {
     val units = new UnitsConverter(D2Q9, Re, physVel,lbVel,physLength,lbLength,lx,ly)
     
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
-//    Image( lattice.map( _.rho ) ).display
     
     iniGeometry(lattice,units)
-//     Image( lattice.map( _.rho ) ).display
     val disp = Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 10000
+    val maxT = 500
     val logT = 10
 
     val begin = Timer.go  
     
-    for (iT <- 0 until maxT) { 
-//         println(iT*units.deltaT + " " + Averages.energy(lattice, WholeDomain) + " " + Averages.density(lattice, WholeDomain))
-//         if (iT % logT == 0) {
-//             Arrays.dump( "vel"+iT+".dat", lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
-//         }
-
+    for (iT <- 0 until maxT) {
       lattice.collideAndStream
       if (iT % logT == 0) {
         actor {
@@ -81,7 +74,6 @@ object Hello {
       }
     }
     
-//       Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
     val end = Timer.stop
     val msups = 1.0 * maxT * (units.nX*units.nY)/ (end-begin) / 1.0e3
     
@@ -89,5 +81,4 @@ object Hello {
     println("MSUPS = " + msups )
     println("Total Time = " + (end-begin)/1000.0 )
   }
-  //Image( lattice.map( _.rho ) ).display
 }
