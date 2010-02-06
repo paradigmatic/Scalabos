@@ -70,12 +70,13 @@ abstract class IncompressiBleDynamics(D:Descriptor) extends Dynamics(D) {
 
   private lazy val myPopIndices = (1 until D.q).toList
 
-  def rho( f: Array[Double]): Double =  f.reduceLeft(_+_)
+	def rho( f: Array[Double]): Double =  lbHelpers.computeRho(D,f)
+//   def rho( f: Array[Double]): Double =  f.reduceLeft(_+_)
   def u( f: Array[Double], rho: Double ) = {
-//       lbHelpers.computeU(D,f,rho)
-    val vel = new Array[Double](D.d)
-    for( iPop <- myPopIndices; iD <- D.dimIndices) vel(iD) += D.c(iPop)(iD)*f(iPop)
-    vel.map(_ / rho)
+      lbHelpers.computeU(D,f,rho)
+//     val vel = new Array[Double](D.d)
+//     for( iPop <- myPopIndices; iD <- D.dimIndices) vel(iD) += D.c(iPop)(iD)*f(iPop)
+//     vel.map(_ / rho)
   }
   
   def deviatoricStress(f:Array[Double], rho:Double, u:Array[Double]) = {
@@ -130,14 +131,14 @@ class BGKdynamics(D:Descriptor, om:Double) extends IncompressiBleDynamics(D) {
     val dens:Double = rho(f)
     val vel:Array[Double] = u(f,dens)
     
-//     lbHelpers.bgkCollision(D,f,dens,vel,omega)
+    lbHelpers.bgkCollision(D,f,dens,vel,omega)
     
-    val velSqr = Arrays.normSqr(vel)
-    
-    for (iPop <- D.popIndices) { 
-      f(iPop) *= (1.0 - omega)
-      f(iPop) += omega*equilibrium(iPop,dens,vel,velSqr)
-    }
+//     val velSqr = Arrays.normSqr(vel)
+//     
+//     for (iPop <- D.popIndices) { 
+//       f(iPop) *= (1.0 - omega)
+//       f(iPop) += omega*equilibrium(iPop,dens,vel,velSqr)
+//     }
   }
 
   override lazy val toString = "BGK("+D+", omega="+omega+")"

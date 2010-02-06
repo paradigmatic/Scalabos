@@ -3,6 +3,19 @@ package lb.dyn
 import lb.util._
 
 object lbHelpers {
+		def computeRho(D:Descriptor,f:Array[Double]) = {
+        if (D == D2Q9) rhoD2Q9(f)
+        else rhoGeneric(f)
+    }
+    
+    private def rhoD2Q9(f:Array[Double]) = {
+        f(0)+f(1)+f(2)+f(3)+f(4)+f(5)+f(6)+f(7)+f(8)
+    }
+    
+    private def rhoGeneric(f:Array[Double]) = {
+        f.reduceLeft(_+_)
+    }
+	
     def computeU(D:Descriptor,f:Array[Double],rho:Double) = {
         if (D == D2Q9) uD2Q9(f,rho)
         else uGeneric(D,f,rho)

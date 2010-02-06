@@ -58,20 +58,20 @@ object Hello {
     val lattice = new Lattice2D( D2Q9, units.nX, units.nY,new BGKdynamics(D2Q9,units.omega) )
     
     iniGeometry(lattice,units)
-    val disp = Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
+//     val disp = Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 500
+    val maxT = 10000
     val logT = 10
 
     val begin = Timer.go  
     
     for (iT <- 0 until maxT) {
       lattice.collideAndStream
-      if (iT % logT == 0) {
-        actor {
-            disp.update( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
-        }
-      }
+//       if (iT % logT == 0) {
+//         actor {
+//             disp.update( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) )
+//         }
+//       }
     }
     
     val end = Timer.stop

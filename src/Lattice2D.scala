@@ -26,28 +26,59 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   def apply( x: Int, y: Int ) = grid(x)(y)
 
   def collide() = { 
-    for (iX <- xRange; iY <- yRange) {
-      grid(iX)(iY).collide
-      // The collided populations are swapped with their opposite direction
-      // this step is needed by the streaming step.
-      grid(iX)(iY).revert
+		var iX = 0
+		while (iX < nX) {
+			var iY = 0
+			while (iY < nY) {
+				grid(iX)(iY).collide
+				// The collided populations are swapped with their opposite direction
+				// this step is needed by the streaming step.
+				grid(iX)(iY).revert
+				iY += 1
+			}
+			iX += 1
     }
+//     for (iX <- xRange; iY <- yRange) {
+//       grid(iX)(iY).collide
+//       // The collided populations are swapped with their opposite direction
+//       // this step is needed by the streaming step.
+//       grid(iX)(iY).revert
+//     }
   }
 
 
  
   def stream() = {
-    lazy val half = D.q/2
-    for (iX <- xRange; iY <- yRange; iPop <- fRange) {
-      // The modulo are used for default periodicity
-      val nextX = (iX + D.c(iPop)(0) + nX) % nX
-      val nextY = (iY + D.c(iPop)(1) + nY) % nY
-      
-      // swapping grid(iX,iY,iPop+half) with grid(nextX)(nextY)(iPop)
-      val tmp = grid(iX)(iY)(iPop+half)
-      grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
-      grid(nextX)(nextY)(iPop) = tmp
+		var iX = 0
+		while (iX < nX) {
+			var iY = 0
+			while (iY < nY) {
+				var iPop = 1
+				while (iPop <= half) {
+					// The modulo are used for default periodicity
+					val nextX = (iX + D.c(iPop)(0) + nX) % nX
+					val nextY = (iY + D.c(iPop)(1) + nY) % nY
+					
+					// swapping grid(iX,iY,iPop+half) with grid(nextX)(nextY)(iPop)
+					val tmp = grid(iX)(iY)(iPop+half)
+					grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
+					grid(nextX)(nextY)(iPop) = tmp
+					iPop += 1
+				}
+				iY += 1
+			}
+			iX += 1
     }
+//     for (iX <- xRange; iY <- yRange; iPop <- fRange) {
+//       // The modulo are used for default periodicity
+//       val nextX = (iX + D.c(iPop)(0) + nX) % nX
+//       val nextY = (iY + D.c(iPop)(1) + nY) % nY
+//       
+//       // swapping grid(iX,iY,iPop+half) with grid(nextX)(nextY)(iPop)
+//       val tmp = grid(iX)(iY)(iPop+half)
+//       grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
+//       grid(nextX)(nextY)(iPop) = tmp
+//     }
   }
 
   def collideAndStream() = { collide; stream; dataProcess }
