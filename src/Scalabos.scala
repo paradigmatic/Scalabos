@@ -60,8 +60,10 @@ object Hello {
     iniGeometry(lattice,units)
 //     val disp = Image( lattice.map( C => Math.sqrt(Arrays.normSqr(C.u)) ) ).display
 
-    val maxT = 10000
+    val maxT = 1000
     val logT = 10
+    
+    for (o <- 0 to 10) {
 
     val begin = Timer.go  
     
@@ -80,5 +82,9 @@ object Hello {
     
     println("MSUPS = " + msups )
     println("Total Time = " + (end-begin)/1000.0 )
+    
+    System.gc
+    System.gc
+		}
   }
 }

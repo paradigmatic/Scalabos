@@ -13,6 +13,7 @@ trait Descriptor {
   lazy val popIndices = (0 until q).toList // Frequently used range over all population indicies
   lazy val dimIndices = (0 until d).toList // Frequently used range over all dimension indicies
   
+  val opposite: Array[Int]
 }
 
 object D2Q9 extends Descriptor {
@@ -26,5 +27,7 @@ object D2Q9 extends Descriptor {
                  1.0/36, 1.0/9, 1.0/36, 1.0/9,
                  1.0/36, 1.0/9, 1.0/36, 1.0/9 )
   val invCs2 = 3.0
+  
+  val opposite = Array(0, 5, 6, 7, 8, 1, 2, 3, 4)
 
 }
