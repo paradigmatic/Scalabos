@@ -13,6 +13,11 @@ class Cell( var dyn: Dynamics ) {
 
   def collide() = dyn(f)
   
+  def copy() = {
+    val cell = new Cell(dyn)
+    cell.f = f
+  }
+  
   def D() : Descriptor = dyn.D
   
   def defineDynamics( dynamics:Dynamics ) = {
@@ -24,7 +29,12 @@ class Cell( var dyn: Dynamics ) {
   }
   
   def revert(): Unit = {
-    for (iPop <- oneToHalfRange) { swap(iPop,iPop+half,f) }
+		var iPop = 1
+		while (iPop <= half) {
+			swap(iPop,iPop+half,f)
+			iPop += 1
+		}
+//     for (iPop <- oneToHalfRange) { swap(iPop,iPop+half,f) }
   }
 
   def rho() = dyn.rho(f)

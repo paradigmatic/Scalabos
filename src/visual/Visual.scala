@@ -18,6 +18,8 @@ import org.jfree.chart.title.PaintScaleLegend
 import org.jfree.chart.axis.AxisLocation
 import org.jfree.ui.RectangleInsets
 import org.jfree.ui.RectangleEdge
+import org.jfree.data.xy.DefaultXYZDataset
+import org.jfree.data.xy.XYZDataset
 
 
 object MatrixDataset {
@@ -72,7 +74,10 @@ class Image( private val matrix: Array[Array[Double]] ) {
     renderer setPaintScale paintScale
     renderer setBlockHeight 1.0
     renderer setBlockWidth 1.0
-    new XYPlot(dataset, xAxis, yAxis, renderer )
+    val plot = new XYPlot(dataset, xAxis, yAxis, renderer )
+//     plot.setDomainAxis(0,null)
+//     plot.setRangeAxis(0,null)
+    plot
   }
 
   lazy val legend = {
@@ -99,15 +104,19 @@ class Image( private val matrix: Array[Array[Double]] ) {
   lazy val chart = {
     val chart = new JFreeChart("Chart Title",JFreeChart.DEFAULT_TITLE_FONT,plot,true)
     chart.removeLegend()
-    chart.addSubtitle(legend);
+    chart.addSubtitle(legend)
+    chart.setTitle( null:String )
     chart
   }
 
   lazy val panel = new ChartPanel( chart )
 
-  def display() { new ChartFrame( panel ) }
+  def display() = { 
+    new ChartFrame( panel )
+    this
+  }
 
-  def saveAs( filename: String, width: Int, height: Int ) {
+  def saveAs( filename: String, width: Int, height: Int ) =  {
     val errorMsg = "File extension not recognized. Currently allowed extension: jpeg, jpg, png"
     val extRegexp = """^.+\.(.+)$""".r
     val extRegexp( ext ) = filename
@@ -126,6 +135,16 @@ class Image( private val matrix: Array[Array[Double]] ) {
       )
       case _ => throw new IllegalArgumentException( errorMsg )
     }
+    this
+  }
+
+  def update( ds: XYZDataset ) {
+      plot.setDataset( ds )
+  }
+
+  def update( matrix: Array[Array[Double]] ) {
+    println("Update called")
+    plot.setDataset( MatrixDataset( matrix ) )
   }
 
   class ChartFrame( val chartPanel: ChartPanel) extends ApplicationFrame("LB") {
@@ -136,31 +155,7 @@ class Image( private val matrix: Array[Array[Double]] ) {
     setVisible(true);  
   }
 
-/*
-   private static JFreeChart createChart(XYDataset dataset) {
-        NumberAxis scaleAxis = new NumberAxis("New Scale");
-        scaleAxis.setUpperBound(250000);
-        scaleAxis.setAxisLinePaint(Color.white);
-        scaleAxis.setTickMarkPaint(Color.white);
-        scaleAxis.setTickLabelFont(new Font("Dialog", Font.PLAIN, 12));
-        PaintScaleLegend legend = new PaintScaleLegend(lps,
-                scaleAxis);
-        legend.setSubdivisionCount(100);
-        legend.setAxisLocation(AxisLocation.TOP_OR_RIGHT);
-        //legend.setStripOutlineVisible(true);
-        legend.setStripOutlinePaint(Color.RED);
-        //scaleAxis.setTickLabelFont(new Font("Arial",12,0));
-        //legend.setAxisOffset(5.0);
-        //legend.setMargin(new RectangleInsets(5, 20, 5, 5));
-        legend.setPadding(new RectangleInsets(5, 20, 5, 5));
-        legend.setStripWidth(20);
-        legend.setPosition(RectangleEdge.LEFT);
-        legend.setBackgroundPaint(Color.WHITE);
-        chart.addSubtitle(legend);
-        chart.setBackgroundPaint(Color.white);
-        return chart;
-    }
-*/
+
 }
 
 object Image {
