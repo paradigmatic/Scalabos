@@ -69,19 +69,25 @@ abstract class DirichletVelocityDynamics(D:Descriptor, val dir:Int, val orient:I
     
     val fNeq = new Array[Double](D.q)
     for (iPop <- onWallIndices) fNeq(iPop) = f(iPop) - equilibrium(iPop, density, uBC, uSqr)
-      
-      for (iPop <- normalIndices) {
-        if (iPop == 0) fNeq(iPop) = 0
-          else fNeq(iPop) = f(iPop) - equilibrium(iPop, density, uBC, uSqr)
-      }
-      var iPi = 0
-      val piNeq = new Array[Double](D.n)
-      for (iA <- 0 until D.d; iB <- iA until D.d ) {
+    
+    for (iPop <- normalIndices) {
+      if (iPop == 0) fNeq(iPop) = 0
+      else fNeq(iPop) = f(iPop) - equilibrium(iPop, density, uBC, uSqr)
+    }
+    var iPi = 0
+    val piNeq = new Array[Double](D.n)
+    var iA = 0
+    while( iA < D.d ) {
+      var iB = iA
+      while( iB < D.d ) {
         for (iPop <- onWallIndices) piNeq(iPi) += D.c(iPop)(iA)*D.c(iPop)(iB)*fNeq(iPop)
           for (iPop <- normalIndices) piNeq(iPi) += 2.0*D.c(iPop)(iA)*D.c(iPop)(iB)*fNeq(iPop)
             iPi += 1
+        iB += 1
       }
-      piNeq
+      iA += 1
+    }
+    piNeq
   }
 }
 
