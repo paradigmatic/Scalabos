@@ -33,14 +33,22 @@ object Arrays {
   def dot(u:Array[Double], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
-    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
+    var iD = 1
+    while ( iD < u.length ) {
+      res += u(iD)*v(iD) 
+      iD += 1
+    }
     res
   }
   
   def dot(u:Array[Int], v:Array[Double]) : Double = {
 		// scalar product TODO : check size
     var res:Double = u(0)*v(0)
-    for( iD <- 1 until u.length) { res += u(iD)*v(iD) }
+    var iD = 1
+    while ( iD < u.length ) {
+      res += u(iD)*v(iD) 
+      iD += 1
+    }
     res
   }
   
@@ -71,6 +79,18 @@ object Indexes {
 		// corresponding to the indices of an original array.
 		val subArray = new Array[T](subInd.length)
 		for (iPop <- 0 until subInd.length) subArray(iPop) = origArray(subInd(iPop))
+		subArray
+	}
+
+  def extractSubArray(origArray:Array[Double], subInd:Array[Int]) : Array[Double] = {
+		// Given an array of indices, returns an array containing the components
+		// corresponding to the indices of an original array.
+		val subArray = new Array[Double](subInd.length)
+                var iPop = 0
+                while( iPop < subInd.length ) {
+                  subArray(iPop) = origArray(subInd(iPop))
+                  iPop += 1
+                }
 		subArray
 	}
   
