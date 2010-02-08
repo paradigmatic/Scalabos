@@ -105,13 +105,20 @@ class BGKdynamics(D:Descriptor, om:Double) extends IncompressiBleDynamics(D) {
     var fNeq = 0.5*D.t(iPop)*Doubles.sqr(D.invCs2)
     var q_pi = 0.0
     var iPi = 0
-    for (iA <- D.dimIndices; iB <- iA until D.d) {
-      if (iA == iB) {
-        q_pi += D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
-        q_pi -= D.cs2*piNeq(iPi)
+    var iA = 0
+    while( iA < D.d ) {
+      var iB = iA
+      while( iB < D.d ) {
+        if (iA == iB) {
+          q_pi += D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
+          q_pi -= D.cs2*piNeq(iPi)
+        } else { 
+          q_pi += 2.0*D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
+        }
+        iPi += 1
+        iB += 1
       }
-      else q_pi += 2.0*D.c(iPop)(iA)*D.c(iPop)(iB)*piNeq(iPi)
-      iPi += 1
+      iA += 1
     }
                      
     fNeq *= q_pi
