@@ -37,10 +37,10 @@ object Averages {
   }
   
   def velocityL2Error(lattice:Lattice2D, fU : (Int,Int) => Array[Double]) : Double = {
-    var totEnergy = lattice.map( (iX,iY,C) => Arrays.normSqr(Arrays.diff(C.u,fU(iX,iY))) ).flatMap(x=>x).reduceLeft(_+_)
-    totEnergy /= (lattice.nX * lattice.nY)
-    totEnergy = Math.sqrt(totEnergy)
-    totEnergy
+    var l2error = lattice.map( (iX,iY,C) => Arrays.normSqr(Arrays.diff(C.u,fU(iX,iY))) ).flatMap(x=>x).reduceLeft(_+_)
+    l2error /= (lattice.nX * lattice.nY)
+    l2error = Math.sqrt(l2error)
+    l2error
   }
   
 }
