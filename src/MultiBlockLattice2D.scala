@@ -1,3 +1,5 @@
+package lb
+
 class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:Int,val nBlockY:Int) {
 	lazy val D = defaultDyn.D
 	private var dataProcessors = List[DataProcessor2D]()
@@ -45,18 +47,17 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 
 	def apply(inX:Int,inY:Int) : Lattice2D = blockGrid(inX)(inY)
 
-	def defineDynamics(dynamics:Dynamics,iX:Int,iY:Int):
-			block = determineBlock(iX,iY)
-			offset = determineOffset(block,iX,iY)
-			blockGrid[block.x][block.y].define_point_dynamics(dynamics,offset.x,offset.y)
-			return 
+	def defineDynamics(dynamics:Dynamics,iX:Int,iY:Int) : Unit = {
+		val block = determineBlock(iX,iY)
+		val offset = determineOffset(block,iX,iY)
+		blockGrid(block.x)(block.y).defineDynamics(dynamics,offset.x,offset.y)
+	}
 
-			grid[iX][iY].define_dynamics(dynamics)
-
-	def define_domain_dynamics(dynamics:Dynamics,domain:Box2D):
-			for iX in range(domain.x0,domain.x1+1):
-					for iY in range(domain.y0,domain.y1+1):
-							define_point_dynamics(dynamics,iX,iY)
+	def define_domain_dynamics(dynamics:Dynamics,domain:Box2D) : Unit = {
+		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) {
+			defineDynamics(dynamics,iX,iY)
+		}
+	}
 
 	def determineBlock(iX:Int,iY:Int) = {
 			val totX = 0; val totY = 0
@@ -78,13 +79,13 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 	}
 
 	def determineOffset(block:Dot2D,iX:Int,iY:Int) = {
-			//print iX, iY
-			var offsetX = D.vicinity
-			var offsetY = D.vicinity
-			for (inX <- 0 until block.x) offsetX -= nxSizes(inX)
-			for (inY <- 0 until block.y) offsetY -= nySizes(inY)
+		//print iX, iY
+		var offsetX = D.vicinity
+		var offsetY = D.vicinity
+		for (inX <- 0 until block.x) offsetX -= nxSizes(inX)
+		for (inY <- 0 until block.y) offsetY -= nySizes(inY)
 
-			Dot2D(iX,iY).shift(Dot2D(offsetX,offsetY))
+		Dot2D(iX,iY).shift(Dot2D(offsetX,offsetY))
 	}
 
 
@@ -96,19 +97,23 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 			blockGrid(block.x)(block.y)(offset.x,offset.y)
 	}
 
-	def getCellDomain(lattice,domain) = 
-			layer = [[lattice.get(iX,iY) for iY in range(domain.y0,domain.y1+1)] for iX in range(domain.x0,domain.x1+1)]
-			return layer
+	def getCellDomain(lattice:Lattice2D,domain:Box2D) = {
+		val layer = new Lattice2D(domain.x1-domain.x0,domain.y1-domain.y0,defaultDyn)
+		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) {
+			layer(iX - domain.x0,iY - domain.y0) = lattice(iX,iY)
+		}
+		layer
+	}
 
 	def copyFromFlatBulkToEnvelope(lattice:Lattice2D,iNx:Int,iNy:Int,domain:Box2D,dir:Int,orient:Int) = {
 			// The part invol
 			val layer = getCellDomain(lattice, domain)
 			val next = Array[Int](D.d)
 			next(dir) = orient
-			nextX = (iNx + next[0] + nBlockX) % nBlockX
-			nextY = (iNy + next[1] + nBlockY) % nBlockY
+			val nextX = (iNx + next(0) + nBlockX) % nBlockX
+			val nextY = (iNy + next(1) + nBlockY) % nBlockY
 
-			nextLattice = blockGrid[nextX][nextY]
+			nextLattice = blockGrid(nextX)(nextY)
 			nextDomain = mbutils.get_next_flat_domain(nextLattice, dir, orient)
 			//print "nextDomain = ", nextDomain.x0,nextDomain.x1,nextDomain.y0,nextDomain.y1
 			//print domain.x0,domain.x1,domain.y0,domain.y1, nextDomain.x0,nextDomain.x1,nextDomain.y0,nextDomain.y1
@@ -129,70 +134,70 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
   }
 
 
-	def fromBulkToNeighborEnvelope(self):
-			"""copies the cells from the bulk of one lattice to the evelope of the neighbor"""
-			for iNx in range(nBlockX):
-					for iNy in range(nBlockY):
-							lattice = blockGrid[iNx][iNy]
-							zero = D.vicinity
-							delta = D.vicinity-1
+	def fromBulkToNeighborEnvelope() = {
+		for (iNx <- 0 until nBlockX) {
+			for (iNy <- 0 until nBlockY) {
+				val lattice = blockGrid(iNx)(iNy)
+				val zero = D.vicinity
+				val delta = D.vicinity-1
 
-							nx = lattice.nx-1
-							ny = lattice.ny-1
+				val nx = lattice.nx-1
+				val ny = lattice.ny-1
 
-							//flat wallf domains
-							left = Box2D(zero,zero+delta,zero,ny-zero)
-							right = Box2D(nx-zero,nx-zero+delta,zero,ny-zero)
-							bottom = Box2D(zero,nx-zero,zero,zero+delta)
-							top = Box2D(zero,nx-zero,ny-zero,ny-zero+delta)
+				//flat wallf domains
+				val left = Box2D(zero,zero+delta,zero,ny-zero)
+				val right = Box2D(nx-zero,nx-zero+delta,zero,ny-zero)
+				val bottom = Box2D(zero,nx-zero,zero,zero+delta)
+				val top = Box2D(zero,nx-zero,ny-zero,ny-zero+delta)
 
-							//corner domains (lt -> left-top, rt -> right-top, lb -> left-bottom, rb -> right-bottom)
-							lt = Box2D(zero,         zero+delta,ny-zero+delta,ny-zero)
-							rt = Box2D(nx-zero+delta,nx-zero,   ny-zero+delta,ny-zero)
-							lb = Box2D(zero,         zero+delta,zero,         zero+delta)
-							rb = Box2D(nx-zero+delta,nx-zero,   zero,         zero+delta)
+				//corner domains (lt -> left-top, rt -> right-top, lb -> left-bottom, rb -> right-bottom)
+				val lt = Box2D(zero,         zero+delta,ny-zero+delta,ny-zero)
+				val rt = Box2D(nx-zero+delta,nx-zero,   ny-zero+delta,ny-zero)
+				val lb = Box2D(zero,         zero+delta,zero,         zero+delta)
+				val rb = Box2D(nx-zero+delta,nx-zero,   zero,         zero+delta)
 
-							// on the bulk interface, the cells must be copied to the envelope
-							// of the neighbor lattice. Here we do tha flat part
-							// we are still left with the corners.
-							//print "walls : ", "num_x = ", iNx, "num_y = ", iNy, ", x_size = ", nxSizes[iNx], ", y_size = ", nySizes[iNy]
-							//print "left = ",left.x0,left.x1,left.y0,left.y1
-							copyFromFlatBulkToEnvelope(lattice,iNx,iNy,left,  0,-1)
-							//print "right = ",right.x0,right.x1,right.y0,right.y1
-							copyFromFlatBulkToEnvelope(lattice,iNx,iNy,right, 0,+1)
-							//print "bottom = ", bottom.x0,bottom.x1,bottom.y0,bottom.y1
-							copyFromFlatBulkToEnvelope(lattice,iNx,iNy,bottom,1,-1)
-							//print "top = ",top.x0,top.x1,top.y0,top.y1
-							copyFromFlatBulkToEnvelope(lattice,iNx,iNy,top,   1,+1)
-							
-							copyFromCornerBulkToEnvelope(lattice,iNx,iNy,lt, -1,+1 )
-							copyFromCornerBulkToEnvelope(lattice,iNx,iNy,lb, -1,-1 )
-							copyFromCornerBulkToEnvelope(lattice,iNx,iNy,rt, +1,+1 )
-							copyFromCornerBulkToEnvelope(lattice,iNx,iNy,rb, +1,-1 )
-
-	def initialize(self):
-			fromBulkToNeighborEnvelope()
-
-	def collide_and_revert(self):
-			for iNx in range(nBlockX):
-					for iNy in range(nBlockY):
-							blockGrid[iNx][iNy].collide_and_revert()
-
-	def swap_stream(self):
-			for iNx in range(nBlockX):
-					for iNy in range(nBlockY):
-							blockGrid[iNx][iNy].swap_stream()
-
-	def dataProcess() = {
-			for (inX <- 0 until nBlockX; inY <- 0 until nBlockY) blockGrid[inX][inY].data_process()
+				// on the bulk interface, the cells must be copied to the envelope
+				// of the neighbor lattice. Here we do tha flat part
+				// we are still left with the corners.
+				//print "walls : ", "num_x = ", iNx, "num_y = ", iNy, ", x_size = ", nxSizes[iNx], ", y_size = ", nySizes[iNy]
+				//print "left = ",left.x0,left.x1,left.y0,left.y1
+				copyFromFlatBulkToEnvelope(lattice,iNx,iNy,left,  0,-1)
+				//print "right = ",right.x0,right.x1,right.y0,right.y1
+				copyFromFlatBulkToEnvelope(lattice,iNx,iNy,right, 0,+1)
+				//print "bottom = ", bottom.x0,bottom.x1,bottom.y0,bottom.y1
+				copyFromFlatBulkToEnvelope(lattice,iNx,iNy,bottom,1,-1)
+				//print "top = ",top.x0,top.x1,top.y0,top.y1
+				copyFromFlatBulkToEnvelope(lattice,iNx,iNy,top,   1,+1)
+				
+				copyFromCornerBulkToEnvelope(lattice,iNx,iNy,lt, -1,+1 )
+				copyFromCornerBulkToEnvelope(lattice,iNx,iNy,lb, -1,-1 )
+				copyFromCornerBulkToEnvelope(lattice,iNx,iNy,rt, +1,+1 )
+				copyFromCornerBulkToEnvelope(lattice,iNx,iNy,rb, +1,-1 )
+			}
+		}
 	}
 
-	def collide_and_stream(self):
-			collide_and_revert()
-			swap_stream()
+	def initialize() = fromBulkToNeighborEnvelope
 
-			data_process()
+	def collide() = {
+		for (iNx <- 0 until nBlockX;iNy <- 0 until nBlockY) blockGrid(iNx)(iNy).collide
+	}
 
-			fromBulkToNeighborEnvelope()
+	def stream() = {
+			for (iNx <- 0 until nBlockX); iNy <- 0 until nBlockY) blockGrid(iNx)(iNy).stream
+	}
+
+	def dataProcess() = {
+			for (inX <- 0 until nBlockX; inY <- 0 until nBlockY) blockGrid(inX)(inY).dataProcess
+	}
+
+	def collideAndStream() = {
+		collide()
+		stream()
+
+		dataProcess()
+
+		fromBulkToNeighborEnvelope()
+	}
 
 
