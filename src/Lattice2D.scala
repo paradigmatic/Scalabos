@@ -29,6 +29,14 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   
   def apply( x: Int, y: Int ) = grid(x)(y)
   def update(x:Int, y:Int,rhs:Cell) = { grid(x)(y) = rhs }
+  
+  def defineDynamics(iX:Int,iY:Int,dyn:Dynamics) : Unit = {
+		grid(iX)(iY).dyn = dyn
+	}
+	
+	def defineDynamics(domain:Box2D,dyn:Dynamics) : Unit = {
+		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) defineDynamics(iX,iY,dyn)
+	}
 
   def collide() = { 
 		var iX = 0

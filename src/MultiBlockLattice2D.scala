@@ -57,10 +57,10 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 	def defineDynamics(dynamics:Dynamics,iX:Int,iY:Int) : Unit = {
 		val block = determineBlock(iX,iY)
 		val offset = determineOffset(block,iX,iY)
-		blockGrid(block.x)(block.y).defineDynamics(dynamics,offset.x,offset.y)
+		blockGrid(block.x)(block.y).defineDynamics(offset.x,offset.y,dynamics)
 	}
 
-	def define_domain_dynamics(dynamics:Dynamics,domain:Box2D) : Unit = {
+	def defineDynamics(dynamics:Dynamics,domain:Box2D) : Unit = {
 		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) {
 			defineDynamics(dynamics,iX,iY)
 		}
@@ -105,9 +105,9 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 	}
 
 	def getCellDomain(lattice:Lattice2D,domain:Box2D) = {
-		val layer = new Lattice2D(D,domain.x1-domain.x0,domain.y1-domain.y0,defaultDyn)
+		val layer = new Array[Array[Cell]](domain.x1-domain.x0,domain.y1-domain.y0)
 		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) {
-			layer(iX - domain.x0,iY - domain.y0) = lattice(iX,iY)
+			layer(iX - domain.x0)(iY - domain.y0) = lattice(iX,iY)
 		}
 		layer
 	}
@@ -121,10 +121,10 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
 			val nextY = (iNy + next(1) + nBlockY) % nBlockY
 
 			val nextLattice = blockGrid(nextX)(nextY)
-			val nextDomain = getNextFlatDomain(nextLattice, dir, orient)
+			val nextDomain = multiUtils.getNextFlatDomain(nextLattice, dir, orient)
 			//print "nextDomain = ", nextDomain.x0,nextDomain.x1,nextDomain.y0,nextDomain.y1
 			//print domain.x0,domain.x1,domain.y0,domain.y1, nextDomain.x0,nextDomain.x1,nextDomain.y0,nextDomain.y1
-			copyCellsDomain(nextLattice,nextDomain,layer)
+			multiUtils.copyCellsDomain(nextLattice,nextDomain,layer)
   }
 
 	def copyFromCornerBulkToEnvelope(lattice:Lattice2D,iNx:Int,iNy:Int,
@@ -136,8 +136,8 @@ class MultiLattice2D(val nX:Int,val nY:Int,val defaultDyn:Dynamics,val nBlockX:I
     val nextY = (iNy + next.y + nBlockY) % nBlockY
 
     val nextLattice = blockGrid(nextX)(nextY)
-    val nextDomain = mbutils.get_next_corner_domain(nextLattice, xNormal, yNormal)
-    copyCellsDomain(nextLattice,nextDomain,layer)
+    val nextDomain = multiUtils.getNextCornerDomain(nextLattice, xNormal, yNormal)
+    multiUtils.copyCellsDomain(nextLattice,nextDomain,layer)
   }
 
 	def fromBulkToNeighborEnvelope() = {
