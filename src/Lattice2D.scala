@@ -15,7 +15,7 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   private lazy val fRange = (1 to half).toList  
   
   val boundingBox = new Box2D(0,nX-1,0,nY-1)
-  val offset = new Dot2D(0,0)
+  var offset = new Dot2D(0,0)
   
   var dataProcessors = List[DataProcessor2D]()
 
@@ -28,6 +28,7 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   }
   
   def apply( x: Int, y: Int ) = grid(x)(y)
+  def update(x:Int, y:Int,rhs:Cell) = { grid(x)(y) = rhs }
 
   def collide() = { 
 		var iX = 0
