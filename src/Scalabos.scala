@@ -1,6 +1,6 @@
 package lb
 
-// import lb._
+import lb.desc._
 import lb.dyn._
 import lb.units._
 import lb.simSetup._
@@ -27,7 +27,7 @@ object Poiseuille2D {
   def iniGeometry(lattice:Lattice2D, units:UnitsConverter) {
 		val ini = new Poiseuille2D(units,0)
     
-    dynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
+    DynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
@@ -89,7 +89,7 @@ object Dipole {
   def iniGeometry(lattice:Lattice2D, units:UnitsConverter) {
     val ini = new Dipole(299.5285375226,0.1,0.0,0.0,0.1,-0.1,units)
     
-    dynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
+    DynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)
@@ -150,7 +150,7 @@ object TaylorGreen2D {
   def iniGeometry(lattice:Lattice2D, units:UnitsConverter) {
 		val ini = new TaylorGreen2D(units,1,1)
     
-    dynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
+    DynInterfaces.addVelocityBoundaryConditionOnBoundingBox(lattice)
     
     val applyBoundaryVelocity = SimSetup.defineVelocity(D2Q9,ini.velocity)
     lattice.select(WholeDomain).foreach(applyBoundaryVelocity)

@@ -1,5 +1,7 @@
 package lb.units
 
+import lb.desc._
+
 class UnitsConverter(val D:Descriptor, val Re:Double, val physVel:Double, val lbVel:Double,
                      val physLength:Double,val lbLength:Int,val lx:Double,val ly:Double) {
   

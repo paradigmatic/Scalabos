@@ -1,6 +1,7 @@
 package lb.simSetup
 
 import lb.util._
+import lb.desc._
 
 object SimSetup {
   private def equilibriumInitializion(D: Descriptor,fRho : (Int,Int) => Double, fU : (Int, Int) => Array[Double])

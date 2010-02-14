@@ -1,4 +1,6 @@
 package lb.dyn
+
+import lb.desc._
 import lb.util._
 
 class BounceBack(D:Descriptor) extends Dynamics(D) {

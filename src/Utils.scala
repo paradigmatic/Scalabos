@@ -82,6 +82,8 @@ object Arrays {
   }
 }
 
+import lb.desc._
+
 object Indexes {
   def subIndex[T <: Descriptor](D:T, dir:Int, orient:Int) : Array[Int] =  {
   //determines the indices of the dir component of velocities pointing in orient direction

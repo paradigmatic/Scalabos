@@ -1,5 +1,6 @@
 package lb.dyn.helpers2d
 
+import lb.desc._
 import lb.util._
 
 object lbHelpers2D {

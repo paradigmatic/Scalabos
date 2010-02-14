@@ -1,5 +1,6 @@
 package lb.dyn
 
+import lb.desc._
 import lb.select._
 import lb.dataProcessors2D._
 
