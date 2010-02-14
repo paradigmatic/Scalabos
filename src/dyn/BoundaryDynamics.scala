@@ -2,25 +2,7 @@ package lb.dyn
 
 import lb.util._
 
-abstract class CompositeDynamics(D:Descriptor) extends Dynamics(D) {
-  var baseDyn:Dynamics = new NoDynamics(D)
-  
-  def equilibrium(iPop:Int, rho:Double, u:Array[Double], uSqr:Double): Double = baseDyn.equilibrium(iPop,rho,u,uSqr)
-  def fOne(iPop:Int, piNeq:Array[Double]): Double = baseDyn.fOne(iPop,piNeq)
-  
-  override def regularize(iPop:Int,rho:Double, u:Array[Double], piNeq:Array[Double]) : Double = baseDyn.regularize(iPop,rho,u,piNeq)
-  
-  def defineBaseDynamics(dyn:Dynamics) = { baseDyn = dyn }
-  
-  def completePopulations(f:Array[Double]) : Unit
-  
-  def omega() = baseDyn.omega
-  
-  override def apply(f:Array[Double]) = {
-    completePopulations(f)
-    baseDyn(f)
-  }
-}
+
 
 class ImposedDensityAndVelocityDynamics(D:Descriptor) extends CompositeDynamics(D) {
   

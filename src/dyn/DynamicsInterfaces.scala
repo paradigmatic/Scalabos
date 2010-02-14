@@ -3,7 +3,7 @@ package lb.dyn
 import lb.select._
 import lb.dataProcessors2D._
 
-object dynInterfaces {
+object DynInterfaces {
   
   def defineDynamics(lattice:Lattice2D, domain:Region, dynamics:Dynamics) {
     lattice.select(domain).foreach(_.defineDynamics(dynamics))
