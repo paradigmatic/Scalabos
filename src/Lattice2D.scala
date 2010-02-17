@@ -14,7 +14,7 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
   private lazy val yRange = (0 until nY).toList
   private lazy val fRange = (1 to half).toList  
   
-  val boundingBox = new Box2D(0,nX-1,0,nY-1)
+  val boundingBox = new Rectangle(0,nX-1,0,nY-1)
   var offset = new Dot2D(0,0)
   
   var dataProcessors = List[DataProcessor2D]()
@@ -27,15 +27,15 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     g
   }
   
-  def apply( x: Int, y: Int ) = grid(x)(y)
+  def apply( x: Int, y: Int ) = {grid(x)(y)}
   def update(x:Int, y:Int,rhs:Cell) = { grid(x)(y) = rhs }
   
   def defineDynamics(iX:Int,iY:Int,dyn:Dynamics) : Unit = {
 		grid(iX)(iY).dyn = dyn
 	}
 	
-	def defineDynamics(domain:Box2D,dyn:Dynamics) : Unit = {
-		for (iX <- domain.x0 to domain.x1; iY <- domain.y0 to domain.y1) defineDynamics(iX,iY,dyn)
+	def defineDynamics(domain:Rectangle,dyn:Dynamics) : Unit = {
+		for (iX <- domain.fromX to domain.toX; iY <- domain.fromY to domain.toY) defineDynamics(iX,iY,dyn)
 	}
 
   def collide() = { 
@@ -61,22 +61,22 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
 
 	def stream() : Unit = stream(boundingBox) 
  
-  def stream(domain:Box2D) :Unit = {
+  def stream(domain:Rectangle) :Unit = {
 		bulkStream(domain.resize(-D.vicinity))
 		
-		boundaryStream(domain, new Box2D(domain.x0,domain.x0+D.vicinity-1,
-                                 domain.y0,domain.y1));
-    boundaryStream(domain, new Box2D(domain.x1-D.vicinity+1,domain.x1,
-                                 domain.y0,domain.y1));
-    boundaryStream(domain, new Box2D(domain.x0+D.vicinity,domain.x1-D.vicinity,
-                                 domain.y0,domain.y0+D.vicinity-1));
-    boundaryStream(domain, new Box2D(domain.x0+D.vicinity,domain.x1-D.vicinity,
-                                 domain.y1-D.vicinity+1,domain.y1));
+		boundaryStream(domain, new Rectangle(domain.fromX,domain.fromX+D.vicinity-1,
+                                 domain.fromY,domain.toY));
+    boundaryStream(domain, new Rectangle(domain.toX-D.vicinity+1,domain.toX,
+                                 domain.fromY,domain.toY));
+    boundaryStream(domain, new Rectangle(domain.fromX+D.vicinity,domain.toX-D.vicinity,
+                                 domain.fromY,domain.fromY+D.vicinity-1));
+    boundaryStream(domain, new Rectangle(domain.fromX+D.vicinity,domain.toX-D.vicinity,
+                                 domain.toY-D.vicinity+1,domain.toY));
 		
-		periodicStream(new Box2D(-D.vicinity, -1,    0,  nY-1))
-    periodicStream(new Box2D( 0, nX-1, -D.vicinity, -1))
-    periodicStream(new Box2D(-D.vicinity, -1,   -D.vicinity, -1))
-    periodicStream(new Box2D(-D.vicinity, -1,    nY, nY-1+D.vicinity))
+		periodicStream(new Rectangle(-D.vicinity, -1,    0,  nY-1))
+    periodicStream(new Rectangle( 0, nX-1, -D.vicinity, -1))
+    periodicStream(new Rectangle(-D.vicinity, -1,   -D.vicinity, -1))
+    periodicStream(new Rectangle(-D.vicinity, -1,    nY, nY-1+D.vicinity))
 		
 		
 // 		var iX = 0
@@ -112,11 +112,11 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
 //     }
   }
   
-  def bulkStream(domain:Box2D) = {
-		var iX = domain.x0
-		while (iX <= domain.x1) {
-			var iY = domain.y0
-			while (iY <= domain.y1) {
+  def bulkStream(domain:Rectangle) = {
+		var iX = domain.fromX
+		while (iX <= domain.toX) {
+			var iY = domain.fromY
+			while (iY <= domain.toY) {
 				var iPop = 1
 				while (iPop <= half) {
 					// The modulo are used for default periodicity
@@ -135,17 +135,17 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     }
 	}
 	
-	def boundaryStream(bound:Box2D,domain:Box2D) = {
-		var iX = domain.x0
-		while (iX <= domain.x1) {
-			var iY = domain.y0
-			while (iY <= domain.y1) {
+	def boundaryStream(bound:Rectangle,domain:Rectangle) = {
+		var iX = domain.fromX
+		while (iX <= domain.toX) {
+			var iY = domain.fromY
+			while (iY <= domain.toY) {
 				var iPop = 1
 				while (iPop <= half) {
 					val nextX = iX + D.c(iPop)(0)
 					val nextY = iY + D.c(iPop)(1)
 					
-					if (nextX >= bound.x0 && nextX <= bound.x1 && nextY >= bound.y0 && nextY <= bound.y1) {
+					if (nextX >= bound.fromX && nextX <= bound.toX && nextY >= bound.fromY && nextY <= bound.toY) {
 						val tmp = grid(iX)(iY)(iPop+half)
 						grid(iX)(iY)(iPop+half) = grid(nextX)(nextY)(iPop)
 						grid(nextX)(nextY)(iPop) = tmp
@@ -158,11 +158,11 @@ class Lattice2D( val D: Descriptor, val nX: Int, val nY: Int,
     }
 	}
 	
-	def periodicStream(domain:Box2D) = {
-		var iX = domain.x0
-		while (iX <= domain.x1) {
-			var iY = domain.y0
-			while (iY <= domain.y1) {
+	def periodicStream(domain:Rectangle) = {
+		var iX = domain.fromX
+		while (iX <= domain.toX) {
+			var iY = domain.fromY
+			while (iY <= domain.toY) {
 				var iPop = 1
 				while (iPop < D.q) {
 					val prevX = iX - D.c(iPop)(0)

@@ -53,7 +53,7 @@ class TaylorGreen2D(val units:UnitsConverter, val m:Int, val n:Int) {
 }
 
 class Poiseuille2D(val units:UnitsConverter, val dir:Int) {
-  def density(iX:Int, iY:Int) = {
+  def density(iX:Int, iY:Int) : Double = {
     lazy val lx = units.nX-1
     lazy val ly = units.nY-1
     

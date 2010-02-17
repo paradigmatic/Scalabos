@@ -16,6 +16,7 @@ class Cell( var dyn: Dynamics ) {
   def copy() = {
     val cell = new Cell(dyn)
     cell.f = f
+    cell
   }
   
   def D() : Descriptor = dyn.D

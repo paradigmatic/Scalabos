@@ -3,7 +3,7 @@ package lb.dataProcessors2D
 import lb.select._
 import lb.util._
 
-class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,domain:Region,val xNormal:Int, val yNormal:Int) 
+class CornerBoundaryConditionProcessor2D(lattice:Lattice2D,domain:Rectangle,val xNormal:Int, val yNormal:Int) 
     extends DataProcessor2D(lattice,domain) {
   def process(iX:Int, iY:Int, cell:Cell) : Unit = {
     val D = lattice.D
